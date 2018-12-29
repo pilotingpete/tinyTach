@@ -1,0 +1,5 @@
+0.8 uA in power down mode - no regulator
+Typ 22 uA for NCV8664 regulator quiescent current
+
+Measured system performance, with NCV8664: 75-85 mA in run mode, 20.4 uA in sleep mode
+ 
