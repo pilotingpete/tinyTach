@@ -2,23 +2,27 @@
 #define _HEADER_GUARD_UUID_D5A11F17_E967_4EC6_90BD_AD8664F9389C
 
 /** @file
- * GPIO Driver
+ * This driver is intended to interface port pins for GPIO. 
+ * Only basic GPIO such as an LED is handled here. 
  */
 
-
-/** Initialize the GPIO
+/** Initialize the GPIO driver. This shoud be called from main() 
+ * prior to using this module.
  */
 extern void Drvr_GPIO_Init( void );
 
-/** Toggle the LED output.
+/** Toggle the green board LED. Calling this function will turn 
+ * ON the LED if it is OFF and vice versa.
  */
 extern void Drvr_GPIO_Led_Toggle( void );
 
-/** Turn Off the LED output.
+/** Turn OFF the green board LED. Calling this function when the
+ * LED is OFF already will have no effect.
  */
 extern void Drvr_GPIO_Led_Off( void );
 
-/** Turn On the LED output.
+/** Turn ON the green board LED. Calling this function when the 
+ * LED is ON already will have no effect.
  */
 extern void Drvr_GPIO_Led_On( void );
 
