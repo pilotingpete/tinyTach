@@ -33,6 +33,7 @@ switchState		Bubble display / Serial output units
 #include <avr/sleep.h>
 #include <stdlib.h>
 #include "main.h"
+#include "drvr_gpio.h"
 //~~~~~~~~~~~~~~~~~~~~~~******************** Includes ********************~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
@@ -54,10 +55,6 @@ switchState		Bubble display / Serial output units
 // retransmit
 #define	REXMIT_PORT 		PORTD
 #define REXMIT				PD4		
-
-// led
-#define	LED_PORT 			PORTD
-#define LED 				PD5
 
 // non-contact pickup
 #define	IR_PORT 			PORTD
@@ -187,6 +184,7 @@ uint8_t doZeroDisplay = 0;
 //~~~~~~~~~~~~~~~~~~~~~~~~~******************** MAIN ********************~~~~~~~~~~~~~~~~~~~~~~~~~~
 int main(void)
 {
+	Drvr_GPIO_Init();
 
 ioInit();
 timerInit();
@@ -235,8 +233,7 @@ sei();
 			DP2 = 0;
 			DP3 = 0;
 			
-			// Turn OFF LED
-			LED_PORT &= ~( 1 << LED );	
+			Drvr_GPIO_Led_Off();
 		}
 		
 		// If a new frequency is ready for calculation
@@ -333,7 +330,7 @@ sei();
 			#endif
 			
 			// To visually check that we are getting a good tach pulse train.
-			toggle_led();
+			Drvr_GPIO_Led_Toggle();
 			
 			// Dont zero out the display; we have data!
 			tmr0ZeroDisplay = 0;
@@ -409,7 +406,7 @@ sei();
 			DP1 = 0;
 			DP2 = 0;
 			DP3 = 0;
-			LED_PORT &= ~( 1 << LED );	// Turn OFF LED
+			Drvr_GPIO_Led_Off();
 		}
 		
 		// Go to sleep 
@@ -424,7 +421,7 @@ sei();
 			
 				// Turn off IO pins
 				REXMIT_PORT &= ~( 1 << REXMIT );
-				LED_PORT &= ~( 1 << LED );
+				Drvr_GPIO_Led_Off();
 				IR_PORT &= ~( 1 << IR_ENABLE );	
 						
 				// Turn off the bubble display shift register.
@@ -459,11 +456,7 @@ void ioInit(void)
 {
 //~~~~~~~~~~~~~~~~~~******************** Pin Configuration ********************~~~~~~~~~~~~~~~~~~~~
 	
-	// LED
-	DDRD |=  ( 1 << LED ) ;		// set to "1" for output 
-	LED_PORT &= ~( 1 << LED  );	// set the outputs low
-	
-	// Tach input
+    // Tach input
 	DDRD &= ~( 1 << IR_INPUT );
 	IR_PORT |= ( 1 << IR_INPUT );	// enable internal pullup
 	
@@ -537,10 +530,6 @@ void timerInit(void)
 
 
 //~~~~~~~~~~~~~~~~~~~~~~******************** Functions ********************~~~~~~~~~~~~~~~~~~~~~~~~
-void toggle_led()
-{
-	LED_PORT ^= ( 1 << LED );
-}
 
 #ifdef SERIAL_ENABLE
 // uart print Cycles Per minute
