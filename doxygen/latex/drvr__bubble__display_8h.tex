@@ -1,0 +1,43 @@
+\hypertarget{drvr__bubble__display_8h}{}\section{drvr\+\_\+bubble\+\_\+display.\+h File Reference}
+\label{drvr__bubble__display_8h}\index{drvr\_bubble\_display.h@{drvr\_bubble\_display.h}}
+\subsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+struct \mbox{\hyperlink{structbubble__t}{bubble\+\_\+t}}
+\end{DoxyCompactItemize}
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \mbox{\hyperlink{drvr__bubble__display_8h_a282b1b5e0e1af77190ac2d758e1f81ca}{Drvr\+\_\+\+Bubble\+\_\+\+Display\+\_\+\+Init}} (void)
+\item 
+void \mbox{\hyperlink{drvr__bubble__display_8h_ae64e99675caf6974abe941e9f92bc02e}{Drvr\+\_\+\+Bubble\+\_\+\+Display\+\_\+\+Print}} (uint8\+\_\+t number, uint8\+\_\+t location, uint8\+\_\+t do\+\_\+decimal)
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Tiny Tach uses a single 4 character bubble display, the Q\+D\+SP 6064. The Display is driven thru a shift register for the segments and G\+P\+IO for the cathodes. The display is multiplexed @ $\sim$256\+Hz The bubble display has 4 cathodes, one for each digit. The cathodes are connected to the uC pins and configured to sink current. Set the the corresponding uC pin L\+OW to select a cathode to sink current and display data. Set the uC pin H\+I\+GH to deselect a cathode. 
+
+\subsection{Function Documentation}
+\mbox{\Hypertarget{drvr__bubble__display_8h_a282b1b5e0e1af77190ac2d758e1f81ca}\label{drvr__bubble__display_8h_a282b1b5e0e1af77190ac2d758e1f81ca}} 
+\index{drvr\_bubble\_display.h@{drvr\_bubble\_display.h}!Drvr\_Bubble\_Display\_Init@{Drvr\_Bubble\_Display\_Init}}
+\index{Drvr\_Bubble\_Display\_Init@{Drvr\_Bubble\_Display\_Init}!drvr\_bubble\_display.h@{drvr\_bubble\_display.h}}
+\subsubsection{\texorpdfstring{Drvr\_Bubble\_Display\_Init()}{Drvr\_Bubble\_Display\_Init()}}
+{\footnotesize\ttfamily void Drvr\+\_\+\+Bubble\+\_\+\+Display\+\_\+\+Init (\begin{DoxyParamCaption}\item[{void}]{ }\end{DoxyParamCaption})}
+
+Initialize the Bubble Display driver. This shoud be called from main() prior to using this module. \mbox{\Hypertarget{drvr__bubble__display_8h_ae64e99675caf6974abe941e9f92bc02e}\label{drvr__bubble__display_8h_ae64e99675caf6974abe941e9f92bc02e}} 
+\index{drvr\_bubble\_display.h@{drvr\_bubble\_display.h}!Drvr\_Bubble\_Display\_Print@{Drvr\_Bubble\_Display\_Print}}
+\index{Drvr\_Bubble\_Display\_Print@{Drvr\_Bubble\_Display\_Print}!drvr\_bubble\_display.h@{drvr\_bubble\_display.h}}
+\subsubsection{\texorpdfstring{Drvr\_Bubble\_Display\_Print()}{Drvr\_Bubble\_Display\_Print()}}
+{\footnotesize\ttfamily void Drvr\+\_\+\+Bubble\+\_\+\+Display\+\_\+\+Print (\begin{DoxyParamCaption}\item[{uint8\+\_\+t}]{number,  }\item[{uint8\+\_\+t}]{location,  }\item[{uint8\+\_\+t}]{do\+\_\+decimal }\end{DoxyParamCaption})}
+
+Sends a number to the bubble display at the location specified. This function should be called at a regular periodic interval to support multiplexing. of the display.
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em number} & is the numeral to display 0\+::9. \\
+\hline
+\mbox{\texttt{ in}}  & {\em location} & is the position. 0 is the leftmost character and 3 is the rightmost. i.\+e. \char`\"{}thousands\char`\"{} and \char`\"{}ones\char`\"{} respectively. \\
+\hline
+\mbox{\texttt{ in}}  & {\em do\+\_\+decimal} & is set to 1 to display the decimal point on the particular digit. Set to 0 to not display the decimal point. \\
+\hline
+\end{DoxyParams}

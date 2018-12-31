@@ -34,6 +34,7 @@ switchState		Bubble display / Serial output units
 #include <stdlib.h>
 #include "main.h"
 #include "drvr_gpio.h"
+#include "drvr_bubble_display.h"
 //~~~~~~~~~~~~~~~~~~~~~~******************** Includes ********************~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
@@ -48,9 +49,7 @@ switchState		Bubble display / Serial output units
 
 // Definitions
 
-// switch 1
-#define	SW1_PORT 			PORTD
-#define SW1					PD2		
+
 
 // retransmit
 #define	REXMIT_PORT 		PORTD
@@ -61,18 +60,6 @@ switchState		Bubble display / Serial output units
 #define IR_INPUT 			PD6		
 #define IR_ENABLE			PD3
 
-// Shift registers.
-#define SHIFT_REG_PORT		PORTB
-#define RCLK				PB4		
-#define SER					PB5		
-#define SRCLK				PB7		
-
-// Bubble Display
-#define BUBBLE_CATH_PORT	PORTB
-#define CATH_0				PB0
-#define CATH_1				PB1
-#define	CATH_2				PB2
-#define	CATH_3				PB3
 
 
 #define LINE_FEED		10
@@ -85,7 +72,7 @@ switchState		Bubble display / Serial output units
 #define SECOND_CAPTURE			1
 #define CAPTURE_RESULT_READY	2
 
-#define MIN_CLK_CYCLES  	100//394		// min of (65536 / 394) * 60 = ~9980 part cycles per minute. i.e we are limiting the max "RPM" to guard 
+#define MIN_CLK_CYCLES  	100//394		// min of (65536 / 394) * 60 = ~9980 DUT cycles per minute. i.e we are limiting the max "RPM" to guard 
 											// against false positive triggers 
 
 #define ARRAY_SIZE 			15		// moving average filter
@@ -121,19 +108,6 @@ switchState		Bubble display / Serial output units
 
 
 
-//		Definition	Byte to shift 	Bubble Digit	Segments Required		
-//_______________________________________________________________				
-#define	DIGIT_0		0b00111111	//	0				A,B,C,D,E,F			
-#define	DIGIT_1		0b00000110	//	1				B,C				
-#define	DIGIT_2		0b01011011	//	2				A,B,D,E,G		
-#define	DIGIT_3		0b01001111	//	3				A,B,C,D,G				
-#define	DIGIT_4		0b01100110	//	4				B,C,F,G			
-#define DIGIT_5		0b01101101	// 	5				A,C,D,F,G		
-#define	DIGIT_6		0b01111101	//	6				A,C,D,E,F,G		
-#define	DIGIT_7		0b00000111	//	7				A,B,C			
-#define	DIGIT_8		0b01111111	//	8	`			A,B,C,D,E,F,G	
-#define	DIGIT_9		0b01101111	//	9				A,B,C,D,F,G		
-#define	DECIMAL		0b10000000	// 	DP								
 //~~~~~~~~~~~~~~~~~~~~~******************** Definitions ********************~~~~~~~~~~~~~~~~~~~~~~~
 
 
@@ -146,8 +120,8 @@ switchState		Bubble display / Serial output units
 
 volatile uint16_t bubbleOutput = 0;	// Sending data to the bubble display
 uint32_t serialOutput = 0;			// Sending data to the UART
-uint16_t cycPerMin = 0;				// Part cycles per minute i.e. RPM
-uint16_t cycPerSec = 0;				// Part cycles per second i.e. Hz
+uint16_t cycPerMin = 0;				// DUT cycles per minute i.e. RPM
+uint16_t cycPerSec = 0;				// DUT cycles per second i.e. Hz
 uint32_t totClockCycles = 0;		// Clock cycles per part cycle i.e time per revolution
 
 uint16_t filterArray[ ARRAY_SIZE ];
@@ -185,6 +159,7 @@ uint8_t doZeroDisplay = 0;
 int main(void)
 {
 	Drvr_GPIO_Init();
+	Drvr_Bubble_Display_Init();
 
 ioInit();
 timerInit();
@@ -202,6 +177,25 @@ sei();
 
 	while(1)
 	{	
+		bubble_t digit;
+
+		digit = (bubble_t){.number = 0, .location = 0, .decimal = 1};
+        Drvr_Bubble_Display_Print( digit );
+        _delay_ms( 1000 );
+
+        digit = (bubble_t){.number = 1, .location = 1, .decimal = 1};
+        Drvr_Bubble_Display_Print( digit );
+        _delay_ms( 1000 );
+
+        digit = (bubble_t){.number = 2, .location = 2, .decimal = 1};
+        Drvr_Bubble_Display_Print( digit );
+        _delay_ms( 1000 );
+
+        digit = (bubble_t){.number = 3, .location = 3, .decimal = 1};
+        Drvr_Bubble_Display_Print( digit );
+        _delay_ms( 1000 );
+
+		#if 0
 		// Input switch state
 		if( bit_is_clear(PIND, SW1 ) )
 		{
@@ -442,6 +436,7 @@ sei();
 				//switchPressed = 0;
 			}
 		#endif
+		#endif
 		
 	}
 }
@@ -464,18 +459,9 @@ void ioInit(void)
 	DDRD |= ( 1 << IR_ENABLE ); 		// Set to "1" for output
 	IR_PORT |= ( 1 << IR_ENABLE );	// Turn ON the IR pickup
 	
-	// Switch input
-	DDRD &= ~( 1 << SW1 );
-	SW1_PORT |= ( 1 << SW1 );	// enable internal pullup
+
 	
-	// Shift Register
-	DDRB |= ( ( 1 << RCLK ) | ( 1 << SER ) | ( 1 << SRCLK ) );				// Set as outputs
-	SHIFT_REG_PORT &= ~( ( 1 << RCLK ) | ( 1 << SER ) | ( 1 << SRCLK ) ); 	// Turn outputs OFF
-	
-	// Bubble Display Cathode Sinks
-	DDRB |=  ( ( 1 << CATH_0 ) | ( 1 << CATH_1 ) | ( 1 << CATH_2 ) | ( 1 << CATH_3 ) );	// set current sinks to "1" for output 
-	BUBBLE_CATH_PORT |= ( ( 1 << CATH_0 ) | ( 1 << CATH_1 ) | ( 1 << CATH_2 ) | ( 1 << CATH_3 ) );	// set the outputs high to not sink current
-	
+
 	// Retransmit
 	#ifdef PSTRETCH_ENABLE
 		DDRD |=  ( 1 << REXMIT ) ;			// set pin to "1" for output 
@@ -487,15 +473,14 @@ void ioInit(void)
 #ifdef SERIAL_ENABLE
 void uartInit(void)
 {	
-//~~~~~~~~~~~~~~~~~~******************* UART Configuration ********************~~~~~~~~~~~~~~~~~~~~	
-		UBRRH = (unsigned char)( MYUBRR >> 8); 	// Set baud rate
-		UBRRL = (unsigned char) MYUBRR; 
-	
-		UCSRB = (1<<RXEN)|(1<<TXEN); 	// Enable receiver and transmitter
+    UBRRH = (unsigned char)( MYUBRR >> 8);    /* Set the baud rate */
+    UBRRL = (unsigned char) MYUBRR; 
 
-		UCSRC = (3<<UCSZ0);  			// Frame format: 8data, No parity, 1stop bit
-//~~~~~~~~~~~~~~~~~~******************* UART Configuration ********************~~~~~~~~~~~~~~~~~~~~	
+    UCSRB = (1<<RXEN)|(1<<TXEN);    /* Enable receiver and transmitter. */
+
+    UCSRC = (3<<UCSZ0);    /* Frame format: 8data, No parity, 1stop bit */
 }
+
 #endif
 
 void timerInit(void)
@@ -635,6 +620,7 @@ uint16_t filter( uint16_t input )
 }
 
 
+//todo make task
 void updateBubbleDisplay( void )
 {
 	static uint8_t myCathode;
@@ -642,7 +628,7 @@ void updateBubbleDisplay( void )
 	// The bubble display cathodes are connected to the AVR pins to sink current
 	// Set the AVR pin high to turn OFF the bubble display cathode.
 	// Set the AVR pin low to turn ON the bubble display cathode and sink current.
-
+#if 0
 	switch (myCathode)
 	{	
 	
@@ -688,100 +674,10 @@ void updateBubbleDisplay( void )
 	}else{
 		myCathode = 0;
 	}
+	#endif
 }
 
 
-void sendDigitToBubble( uint8_t digitToSend, uint8_t doDecimal )
-{
-
-uint8_t myByteToShift = 0b00000000;
-
-	switch ( digitToSend ){
-	
-		case 0:
-			myByteToShift = DIGIT_0;
-		break;
-	
-		case 1:
-			myByteToShift = DIGIT_1;
-		break;
-		
-		case 2:
-			myByteToShift = DIGIT_2;
-		break;
-		
-		case 3:
-			myByteToShift = DIGIT_3;
-		break;
-		
-		case 4:
-			myByteToShift = DIGIT_4;
-		break;
-		
-		case 5:
-			myByteToShift = DIGIT_5;
-		break;
-		
-		case 6:
-			myByteToShift = DIGIT_6;
-		break;
-		
-		case 7:
-			myByteToShift = DIGIT_7;
-		break;
-		
-		case 8:
-			myByteToShift = DIGIT_8;
-		break;
-		
-		case 9:
-			myByteToShift = DIGIT_9;
-		break;
-		
-	}
-	
-	if(doDecimal)
-		myByteToShift |= DECIMAL;
-		
-	shiftByteOut(myByteToShift);
-		
-
-}
-
-
-
-void shiftRegisterPulse( void )
-{
-	SHIFT_REG_PORT |= ( 1 << SRCLK );		// set the serial clock line high.
-    SHIFT_REG_PORT &= ~( 1 << SRCLK );		// Set the serial Clock line low.
-}				
-
-
-
-
-void shiftByteOut( uint8_t byteToShift )
-{
-	SHIFT_REG_PORT &= ~( 1 << RCLK );		// Hold low while transmitting.
-	
-	for( uint8_t i = 0; i < 8; i++ ) 
-	{
-		// If the MSB is high.
-		if ( byteToShift & _BV( 7 - i ) ){
-		
-            SHIFT_REG_PORT |= ( 1 << SER );	// set the output high
-        
-        } else {
-        
-            SHIFT_REG_PORT &= ~( 1 << SER );	// Set the output low.
-        
-        }
-        
-        shiftRegisterPulse();
-    }
-    
-    SHIFT_REG_PORT |= ( 1 << RCLK );	
-
-}
 
 
 
