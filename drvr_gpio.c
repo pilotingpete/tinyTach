@@ -37,3 +37,8 @@ void Drvr_GPIO_Led_On( void )
 {
 	LED_PORT |= ( 1 << LED );
 }
+
+uint8_t Drvr_GPIO_Switch_Is_Pressed( void )
+{
+	return bit_is_clear( SW1_PORT, SW1 );
+}

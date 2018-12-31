@@ -26,4 +26,9 @@ extern void Drvr_GPIO_Led_Off( void );
  */
 extern void Drvr_GPIO_Led_On( void );
 
+/** Function to interface the tactile switch onboard. 
+ * \return 1 if the switch is pressed. Otherwise, return 0.
+ */
+extern uint8_t Drvr_GPIO_Switch_Is_Pressed( void );
+
 #endif /* _HEADER_GUARD_UUID_D5A11F17_E967_4EC6_90BD_AD8664F9389C */

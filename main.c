@@ -35,6 +35,7 @@ switchState		Bubble display / Serial output units
 #include "main.h"
 #include "drvr_gpio.h"
 #include "drvr_bubble_display.h"
+#include "drvr_serial.h"
 //~~~~~~~~~~~~~~~~~~~~~~******************** Includes ********************~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
@@ -65,8 +66,7 @@ switchState		Bubble display / Serial output units
 #define LINE_FEED		10
 #define CARRIAGE_RETURN	13
 
-#define BaudRate 9600
-#define MYUBRR ((F_CPU / 16 / BaudRate ) - 1 )
+
 
 #define FIRST_CAPTURE 			0
 #define SECOND_CAPTURE			1
@@ -160,6 +160,7 @@ int main(void)
 {
 	Drvr_GPIO_Init();
 	Drvr_Bubble_Display_Init();
+	Drvr_Serial_Init();
 
 ioInit();
 timerInit();
@@ -177,27 +178,32 @@ sei();
 
 	while(1)
 	{	
+		#if 1
 		bubble_t digit;
 
 		digit = (bubble_t){.number = 0, .location = 0, .decimal = 1};
-        Drvr_Bubble_Display_Print( digit );
-        _delay_ms( 1000 );
+        Drvr_Bubble_Display_Print( &digit );
+        _delay_ms( 500 );
 
         digit = (bubble_t){.number = 1, .location = 1, .decimal = 1};
-        Drvr_Bubble_Display_Print( digit );
-        _delay_ms( 1000 );
+        Drvr_Bubble_Display_Print( &digit );
+        _delay_ms( 500 );
 
         digit = (bubble_t){.number = 2, .location = 2, .decimal = 1};
-        Drvr_Bubble_Display_Print( digit );
-        _delay_ms( 1000 );
+        Drvr_Bubble_Display_Print( &digit );
+        _delay_ms( 500 );
 
         digit = (bubble_t){.number = 3, .location = 3, .decimal = 1};
-        Drvr_Bubble_Display_Print( digit );
-        _delay_ms( 1000 );
+        Drvr_Bubble_Display_Print( &digit );
+        _delay_ms( 500 );
+#endif
+        const char *buff = "Test!\r\n";
+        Drvr_Serial_Print_String( buff );
+        Drvr_Serial_Print_String( "Another test!!!\r\n" );
 
 		#if 0
 		// Input switch state
-		if( bit_is_clear(PIND, SW1 ) )
+		if( Drvr_GPIO_Switch_Is_Pressed() )
 		{
 			switchState++;
 			
@@ -473,12 +479,7 @@ void ioInit(void)
 #ifdef SERIAL_ENABLE
 void uartInit(void)
 {	
-    UBRRH = (unsigned char)( MYUBRR >> 8);    /* Set the baud rate */
-    UBRRL = (unsigned char) MYUBRR; 
-
-    UCSRB = (1<<RXEN)|(1<<TXEN);    /* Enable receiver and transmitter. */
-
-    UCSRC = (3<<UCSZ0);    /* Frame format: 8data, No parity, 1stop bit */
+    
 }
 
 #endif
@@ -516,7 +517,7 @@ void timerInit(void)
 
 //~~~~~~~~~~~~~~~~~~~~~~******************** Functions ********************~~~~~~~~~~~~~~~~~~~~~~~~
 
-#ifdef SERIAL_ENABLE
+#if 0
 // uart print Cycles Per minute
 void uartPrint( uint32_t data , uint8_t newline)
 {
@@ -678,35 +679,4 @@ void updateBubbleDisplay( void )
 }
 
 
-
-
-
-#ifdef SERIAL_ENABLE
-//unsigned char serialRead(void)
-//{
-//	while (serialCheckRxComplete() == 0)		// While data is NOT available to read
-//	{;;} 
-//	return UDR;
-//}
-
-
-//unsigned char serialCheckRxComplete(void)
-//{
-//	return( UCSRA & _BV(RXC)) ;		// nonzero if serial data is available to read.
-//}
-
-
-void serialWrite(unsigned char DataOut)
-{
-	while (serialCheckTxReady() == 0)		// while NOT ready to transmit 
-	{;;} 
-	UDR = DataOut;
-}
-
-
-unsigned char serialCheckTxReady(void)
-{
-	return( UCSRA & _BV(UDRE) ) ;		// nonzero if transmit register is ready to receive new data.
-}
-#endif
 //~~~~~~~~~~~~~~~~~~~~~~******************** Functions ********************~~~~~~~~~~~~~~~~~~~~~~~~
