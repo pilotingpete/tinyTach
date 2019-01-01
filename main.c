@@ -52,14 +52,9 @@ switchState		Bubble display / Serial output units
 
 
 
-// retransmit
-#define	REXMIT_PORT 		PORTD
-#define REXMIT				PD4		
+#define CAPTURE_RESULT_READY	2
 
-// non-contact pickup
-#define	IR_PORT 			PORTD
-#define IR_INPUT 			PD6		
-#define IR_ENABLE			PD3
+
 
 
 
@@ -68,9 +63,7 @@ switchState		Bubble display / Serial output units
 
 
 
-#define FIRST_CAPTURE 			0
-#define SECOND_CAPTURE			1
-#define CAPTURE_RESULT_READY	2
+
 
 #define MIN_CLK_CYCLES  	100//394		// min of (65536 / 394) * 60 = ~9980 DUT cycles per minute. i.e we are limiting the max "RPM" to guard 
 											// against false positive triggers 
@@ -129,11 +122,7 @@ uint16_t filterArray[ ARRAY_SIZE ];
 uint8_t switchState = 1;
 
 
-volatile uint8_t tmr1NumOverflows = 0;
-volatile uint16_t tmr0ZeroDisplay = 0;
-volatile uint32_t inputCap1 = 0;
-volatile uint32_t inputCap2 = 0;
-volatile uint8_t captureState = 0;
+
 
 #ifdef PSTRETCH_ENABLE
 volatile uint8_t tmr0PulseStretch = 0;
@@ -161,8 +150,8 @@ int main(void)
 	Drvr_GPIO_Init();
 	Drvr_Bubble_Display_Init();
 	Drvr_Serial_Init();
+	Drvr_Tach_Init();
 
-ioInit();
 timerInit();
 
 #ifdef SERIAL_ENABLE
@@ -174,7 +163,8 @@ timerInit();
 #endif
 
 sei();
-
+/* Serial buffer */
+char buff[10]; 
 
 	while(1)
 	{	
@@ -197,11 +187,22 @@ sei();
         Drvr_Bubble_Display_Print( &digit );
         _delay_ms( 500 );
 #endif
-        const char *buff = "Test!\r\n";
+        
+        
+        Drvr_Serial_Print_String( "0123456789012345678901234567890123456789\r\n" );
+  
+        ultoa( 46622342, buff, 10 );
         Drvr_Serial_Print_String( buff );
-        Drvr_Serial_Print_String( "Another test!!!\r\n" );
 
-		#if 0
+        Drvr_Serial_Print_String( "\r\n" );
+
+        ultoa( 123, buff, 10 );
+        Drvr_Serial_Print_String( buff );
+
+        Drvr_Serial_Print_String( "\r\n" );
+
+
+		#if 1
 		// Input switch state
 		if( Drvr_GPIO_Switch_Is_Pressed() )
 		{
@@ -326,7 +327,7 @@ sei();
 			// for the pulse stretch
 			#ifdef PSTRETCH_ENABLE
 				tmr0PulseStretch = 0; 
-				REXMIT_PORT |= ( 1 << REXMIT );
+				Drvr_Tach_Rexmit_On();
 			#endif
 			
 			// To visually check that we are getting a good tach pulse train.
@@ -343,7 +344,7 @@ sei();
 		#ifdef PSTRETCH_ENABLE
 			if( tmr0PulseStretch >= PULSE_STRETCH )
 			{
-				REXMIT_PORT &= ~( 1 << REXMIT );	
+				Drvr_Tach_Rexmit_Off();	
 			}
 		#endif
 		
@@ -420,9 +421,9 @@ sei();
 				tmr0ZeroDisplay = 0;	
 			
 				// Turn off IO pins
-				REXMIT_PORT &= ~( 1 << REXMIT );
+				Drvr_Tach_Rexmit_Off();
 				Drvr_GPIO_Led_Off();
-				IR_PORT &= ~( 1 << IR_ENABLE );	
+				Drvr_Tach_Sensor_Disable();
 						
 				// Turn off the bubble display shift register.
 				shiftByteOut( 0b00000000 );
@@ -438,7 +439,7 @@ sei();
 			
 				// Wake up!
 				sleep_disable();
-				IR_PORT |= ( 1 << IR_ENABLE );	// Turn on the IR pickup
+				Drvr_Tach_Sensor_Enable();	// Turn on the IR pickup
 				//switchPressed = 0;
 			}
 		#endif
@@ -450,40 +451,6 @@ sei();
 
 
 
-
-
-
-void ioInit(void)
-{
-//~~~~~~~~~~~~~~~~~~******************** Pin Configuration ********************~~~~~~~~~~~~~~~~~~~~
-	
-    // Tach input
-	DDRD &= ~( 1 << IR_INPUT );
-	IR_PORT |= ( 1 << IR_INPUT );	// enable internal pullup
-	
-	// Tach enable
-	DDRD |= ( 1 << IR_ENABLE ); 		// Set to "1" for output
-	IR_PORT |= ( 1 << IR_ENABLE );	// Turn ON the IR pickup
-	
-
-	
-
-	// Retransmit
-	#ifdef PSTRETCH_ENABLE
-		DDRD |=  ( 1 << REXMIT ) ;			// set pin to "1" for output 
-		REXMIT_PORT &= ~( 1 << REXMIT  );	// set the outputs low
-	#endif
-//~~~~~~~~~~~~~~~~~~******************** Pin Configuration ********************~~~~~~~~~~~~~~~~~~~~
-}
-	
-#ifdef SERIAL_ENABLE
-void uartInit(void)
-{	
-    
-}
-
-#endif
-
 void timerInit(void)
 {
 //~~~~~~~~~~~~~~~~~~******************* Timer0 Configuration ******************~~~~~~~~~~~~~~~~~~~~	
@@ -494,20 +461,7 @@ void timerInit(void)
 //~~~~~~~~~~~~~~~~~~******************* Timer0 Configuration ******************~~~~~~~~~~~~~~~~~~~~	
 
 //~~~~~~~~~~~~~~~~~~******************* Timer1 Configuration ******************~~~~~~~~~~~~~~~~~~~~	
-	TCCR1B |= ( 1 << ICNC1 );					// Enable input capture noise canceler
-	//TCCR1B |= ( 1 << ICES1 );					// Trigger on rising edge of ICP1 pin
-	TCCR1B &= ~( 1 << ICES1 );					// Trigger on falling edge of ICP1 pin
-	TCCR1B |= (( 1 << CS11 ) | ( 1 << CS10 ));	// Div64 on clock for 4.194304 MHz / 64 = 65536
-	
-	TIMSK |= ( 1 << TOIE1 );	// Enable timer 1 overflow interrupt
-	TIMSK |= ( 1 << ICIE1 );	// Enable input capture interrupt
-//~~~~~~~~~~~~~~~~~~******************* Timer1 Configuration ******************~~~~~~~~~~~~~~~~~~~~	
 
-//~~~~~~~~~~~~~~~~~~*************** External INT0 Configuration ***************~~~~~~~~~~~~~~~~~~~~	
-	#ifdef SLEEP_ENABLE
-		MCUCR |= ( 1 << ISC11 );	// The falling edge of INT1 generates an interrupt request.
-		GIMSK |= ( 1 << INT0 );		// External Interrupt Request 0 Enable
-	#endif 
 //~~~~~~~~~~~~~~~~~~*************** External INT0 Configuration ***************~~~~~~~~~~~~~~~~~~~~	
 
 
@@ -561,37 +515,6 @@ ISR( TIMER0_OVF_vect )
 	tmr0ZeroDisplay++;
 	
 	updateBubbleDisplay();
-}
-
-// For extending the input capture timing capability
-ISR( TIMER1_OVF_vect )
-{
-	if( tmr1NumOverflows < 255 )	// Limit the overflows so this doesn't roll over too...
-		tmr1NumOverflows++;
-}
-
-// input capture period measurement
-ISR( TIMER1_CAPT_vect )
-{
-	switch( captureState )
-	{
-		case FIRST_CAPTURE:
-			inputCap1 = ICR1;	// First input capture time
-			captureState++;
-			break;
-			
-		case SECOND_CAPTURE: 
-			inputCap2 = ICR1;	// Second input capture time
-			
-			if( abs( inputCap2 - inputCap1 ) > MIN_CLK_CYCLES ) {
-				TIMSK &= ~( ( 1 << TOIE1 ) | ( 1 << ICIE1 ) );	// Disable timer capture and overflow interrupts
-				captureState++;
-			}
-			break;
-		
-		default:
-			break;	
-	}
 }
 
 #ifdef SLEEP_ENABLE

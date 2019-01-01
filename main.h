@@ -1,6 +1,5 @@
 // function prototypes
 
-void ioInit(void);
 void uartInit(void);
 void toggle_led(void);
 void uartPrint( uint32_t data, uint8_t newline );

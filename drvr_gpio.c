@@ -7,8 +7,9 @@
 
 /* Tact switch */
 #define	SW1_PORT    PORTD
-#define SW1         PD2		
+#define SW1         PD2	
 
+		
 
 void Drvr_GPIO_Init( void )
 {
