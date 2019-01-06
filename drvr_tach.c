@@ -55,12 +55,6 @@ void Drvr_Tach_Init( void )
 	/* Interrupt enable */
 	TIMSK |= ( 1 << TOIE1 );	/* Timer 1 overflow interrupt */
 	TIMSK |= ( 1 << ICIE1 );	/* Input capture interrupt */
-
-    /* External interrupt. This allows the pushbutton to bring the tach out of 
-     * the power down sleep mode 
-     */
-    MCUCR |= ( 1 << ISC11 );	/* The falling edge of INT1 generates an interrupt request. */
-//    GIMSK |= ( 1 << INT0 );		/* External Interrupt Request 0 Enable. */
 }
 
 

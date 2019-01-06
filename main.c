@@ -481,6 +481,6 @@ ISR( TIMER0_OVF_vect )
 
 ISR( INT0_vect )
 {
-    /* No code. Simply here to facilitate wake from sleep. */	
+    /* No code. Wake from sleep ISR. */	
 }
 
