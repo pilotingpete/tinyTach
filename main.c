@@ -186,8 +186,8 @@ int main(void)
     {
   	    { TICK__1000MS ,  0, Task_Serial },
         { TICK__100MS ,  0, task_b },
-        { TICK__1MS , 0, Task_Bubble_Display },
-        { TICK__1MS , 0, Task_Data_Hold },
+        { TICK__10MS , 0, Task_Bubble_Display },
+        { TICK__100MS , 0, Task_Data_Hold },
         { TICK__2000MS , 0, Task_Watchdog },
         /* End of the task list. */
   	    { 0 , 0, NULL }
@@ -211,16 +211,11 @@ int main(void)
 
 
 
-		//if( Drvr_GPIO_Switch_Is_Pressed() )
-		//{
-			//Drvr_Serial_Print_String( "sw pressed.\n\r" );
-			//Task_Bubble_Display_Set_Data_Hold( 3232 );
-		//}
-		uint32_t tmp = App_Scheduler_Get_Sys_Tick();
-
-		ultoa( tmp, buff, 10 );
-		Drvr_Serial_Print_String( buff );
-        Drvr_Serial_Print_String( "\n\r" );
+		if( Drvr_GPIO_Switch_Is_Pressed() )
+		{
+			Task_Bubble_Display_Set_Data_Hold( 50 );
+		}
+	
 
         Task_Bubble_Display_Set_Bubble_Data( speed, 2 );
 
