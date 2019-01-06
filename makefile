@@ -80,7 +80,17 @@ OBJDIR = .
 
 
 # List C source files here. (C dependencies are automatically generated.)
-SRC = $(TARGET).c drvr_gpio.c drvr_bubble_display.c drvr_serial.c drvr_tach.c
+SRC = $(TARGET).c \
+      drvr_gpio.c \
+      drvr_bubble_display.c \
+      drvr_serial.c \
+      drvr_tach.c \
+      drvr_watchdog.c \
+      app_scheduler.c \
+      task_serial.c \
+      task_b.c \
+      task_bubble_display.c \
+      task_watchdog.c
 
 # List C++ source files here. (C dependencies are automatically generated.)
 CPPSRC = 

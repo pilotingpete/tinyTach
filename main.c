@@ -36,6 +36,15 @@ switchState		Bubble display / Serial output units
 #include "drvr_gpio.h"
 #include "drvr_bubble_display.h"
 #include "drvr_serial.h"
+#include "drvr_tach.h"
+#include "drvr_watchdog.h"
+
+#include "app_scheduler.h"
+#include "task_serial.h"
+#include "task_b.h"
+#include "task_bubble_display.h"
+#include "task_watchdog.h"
+
 //~~~~~~~~~~~~~~~~~~~~~~******************** Includes ********************~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
@@ -45,16 +54,24 @@ switchState		Bubble display / Serial output units
 #define PSTRETCH_ENABLE		// Pulse stretch output
 //~~~~~~~~~~~~~~~~~~~~~************** Pre-Processor Directives *************~~~~~~~~~~~~~~~~~~~~~~~
 
-
-//~~~~~~~~~~~~~~~~~~~~~******************** Definitions ********************~~~~~~~~~~~~~~~~~~~~~~~
-
-// Definitions
-
-
+/* The sysystem tick ISR fires at 524288 Hz, and it is an 8-bit timer
+ * Therefore the tick counter rolls over at 524288 / 256 = 2048 Hz
+ * Thus the tick time is 488 microseconds.
+ * Actually, this back calculates to 2049.19 microseconds. Probably
+ * ok here, but todo: look into this.
+ */
+#define TICK__TIME_US   488UL
+#define TICK__2000MS    ( 2000000UL / TICK__TIME_US)
+#define TICK__1000MS    ( 1000000UL / TICK__TIME_US)
+#define TICK__100MS     ( 100000UL / TICK__TIME_US)
+#define TICK__10MS      ( 10000UL / TICK__TIME_US)
+#define TICK__1MS       ( 1000UL / TICK__TIME_US)
+#define TICK__100US     ( 100UL / TICK__TIME_US)
 
 #define CAPTURE_RESULT_READY	2
 
 
+volatile uint16_t tmr0ZeroDisplay = 0;
 
 
 
@@ -65,8 +82,6 @@ switchState		Bubble display / Serial output units
 
 
 
-#define MIN_CLK_CYCLES  	100//394		// min of (65536 / 394) * 60 = ~9980 DUT cycles per minute. i.e we are limiting the max "RPM" to guard 
-											// against false positive triggers 
 
 #define ARRAY_SIZE 			15		// moving average filter
 #define CYCLE_FILTER_LIM	6554	// 6554 clock cycles ~= 600 RPM, Don't filter speed data if slower 
@@ -139,70 +154,80 @@ volatile uint8_t DP3 = 0;
 
 uint8_t doZeroDisplay = 0;
 
-//~~~~~~~~~~~~~~~~~~~******************** Global Variables ********************~~~~~~~~~~~~~~~~~~~~
 
+static void sys_tick_isr_init(void)
+{
+	/* This timer overflow interrupt will  */
+    TCCR0B |= ( 1 << CS01 );    /* Div8 on clock for 4.194304 MHz / 8 = 524288 Hz, */
+                                /* so, 2048 8-bit timer overflows per second */
+	
+    TIMSK |= ( 1 << TOIE0 );	/* Enable timer 0 overflow interrupt. */
+}
 
-
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~******************** MAIN ********************~~~~~~~~~~~~~~~~~~~~~~~~~~
 int main(void)
 {
 	Drvr_GPIO_Init();
 	Drvr_Bubble_Display_Init();
 	Drvr_Serial_Init();
 	Drvr_Tach_Init();
+    Drvr_Watchdog_Init();
+    sys_tick_isr_init();
 
-timerInit();
+    /* Define the sleep mode type. */
+    set_sleep_mode( SLEEP_MODE_PWR_DOWN );
 
-#ifdef SERIAL_ENABLE
-	uartInit();
-#endif
+    /* Global interrupt enable. */
+    sei();
 
-#ifdef SLEEP_ENABLE
-	set_sleep_mode(SLEEP_MODE_PWR_DOWN);
-#endif
 
-sei();
-/* Serial buffer */
-char buff[10]; 
+
+    /* Task list for the scheduler to run. */
+    task_t tasks[] =
+    {
+  	    { TICK__1000MS ,  0, Task_Serial },
+        { TICK__100MS ,  0, task_b },
+        { TICK__1MS , 0, Task_Bubble_Display },
+        { TICK__1MS , 0, Task_Data_Hold },
+        { TICK__2000MS , 0, Task_Watchdog },
+        /* End of the task list. */
+  	    { 0 , 0, NULL }
+    };
+
+	char buff[10]; 
+
+	Drvr_Serial_Print_String( "Reset.\n\r" );
+    
+	uint16_t data_hold = 0;
 
 	while(1)
 	{	
-		#if 1
-		bubble_t digit;
 
-		digit = (bubble_t){.number = 0, .location = 0, .decimal = 1};
-        Drvr_Bubble_Display_Print( &digit );
-        _delay_ms( 500 );
 
-        digit = (bubble_t){.number = 1, .location = 1, .decimal = 1};
-        Drvr_Bubble_Display_Print( &digit );
-        _delay_ms( 500 );
+	//_delay_ms(1000);
+		uint16_t speed;
+		speed++;
 
-        digit = (bubble_t){.number = 2, .location = 2, .decimal = 1};
-        Drvr_Bubble_Display_Print( &digit );
-        _delay_ms( 500 );
+		if( speed == 7000 ){ speed = 0; }
 
-        digit = (bubble_t){.number = 3, .location = 3, .decimal = 1};
-        Drvr_Bubble_Display_Print( &digit );
-        _delay_ms( 500 );
-#endif
+
+
+		//if( Drvr_GPIO_Switch_Is_Pressed() )
+		//{
+			//Drvr_Serial_Print_String( "sw pressed.\n\r" );
+			//Task_Bubble_Display_Set_Data_Hold( 3232 );
+		//}
+		uint32_t tmp = App_Scheduler_Get_Sys_Tick();
+
+		ultoa( tmp, buff, 10 );
+		Drvr_Serial_Print_String( buff );
+        Drvr_Serial_Print_String( "\n\r" );
+
+        Task_Bubble_Display_Set_Bubble_Data( speed, 2 );
+
+		/* Run all the tasks in tasks[] */
+		App_Scheduler_Run_Tasks( tasks );
         
-        
-        Drvr_Serial_Print_String( "0123456789012345678901234567890123456789\r\n" );
-  
-        ultoa( 46622342, buff, 10 );
-        Drvr_Serial_Print_String( buff );
-
-        Drvr_Serial_Print_String( "\r\n" );
-
-        ultoa( 123, buff, 10 );
-        Drvr_Serial_Print_String( buff );
-
-        Drvr_Serial_Print_String( "\r\n" );
-
-
-		#if 1
+		#if 0
 		// Input switch state
 		if( Drvr_GPIO_Switch_Is_Pressed() )
 		{
@@ -238,17 +263,17 @@ char buff[10];
 		}
 		
 		// If a new frequency is ready for calculation
-		if( captureState >= CAPTURE_RESULT_READY )	
+		if( capture_state >= CAPTURE_RESULT_READY )	
 		{
 			
 			// Calculate the total number of system clock cycles between tach input pulses
-			if ( inputCap2 < inputCap1 )
+			if ( input_cap_2 < input_cap_1 )
 			{
-				inputCap2 += 65536;
+				input_cap_2 += 65536;
 			}
 			
-			totClockCycles = inputCap2 - inputCap1;
-			totClockCycles += tmr1NumOverflows * 65536;
+			totClockCycles = input_cap_2 - input_cap_1;
+			totClockCycles += num_overflows_tmr_1 * 65536;
 			
 			
 			// Prepare the data for outputting in the correct units.
@@ -318,9 +343,9 @@ char buff[10];
 			serialOutput = bubbleOutput;
 			
 			// we got that first cycle time, now we need to grab the subsequent ones
-			inputCap1 = inputCap2;						// the timer is still running, so we prepare for the next calculation 
-			captureState = 1;							// Prepare the capture state machine
-			tmr1NumOverflows = 0;
+			input_cap_1 = input_cap_2;						// the timer is still running, so we prepare for the next calculation 
+			capture_state = 1;							// Prepare the capture state machine
+			num_overflows_tmr_1 = 0;
 			TIMSK |= ( ( 1 << TOIE1 ) | ( 1 << ICIE1 ) );	// Enable timer capture and overflow interrupts
 			
 			
@@ -447,159 +472,15 @@ char buff[10];
 		
 	}
 }
-//~~~~~~~~~~~~~~~~~~~~~~~~~******************** MAIN ********************~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-
-
-void timerInit(void)
-{
-//~~~~~~~~~~~~~~~~~~******************* Timer0 Configuration ******************~~~~~~~~~~~~~~~~~~~~	
-	TCCR0B |= ( ( 1 << CS01 ) | ( 1 << CS00 ) );	// Div64 on clock for 4.194304 MHz / 64 = 65536 Hz, 
-													// so 256 8-bit timer overflows per second 
-	
-	TIMSK |= ( 1 << TOIE0 );	// Enable timer 0 overflow interrupt
-//~~~~~~~~~~~~~~~~~~******************* Timer0 Configuration ******************~~~~~~~~~~~~~~~~~~~~	
-
-//~~~~~~~~~~~~~~~~~~******************* Timer1 Configuration ******************~~~~~~~~~~~~~~~~~~~~	
-
-//~~~~~~~~~~~~~~~~~~*************** External INT0 Configuration ***************~~~~~~~~~~~~~~~~~~~~	
-
-
-}
-
-
-
-//~~~~~~~~~~~~~~~~~~~~~~******************** Functions ********************~~~~~~~~~~~~~~~~~~~~~~~~
-
-#if 0
-// uart print Cycles Per minute
-void uartPrint( uint32_t data , uint8_t newline)
-{
-	
-	serialWrite( ( data / 10000000000 ) | 0x30 );
-	serialWrite( ( ( data % 1000000000 ) / 100000000 ) | 0x30 );	
-	serialWrite( ( ( data % 100000000 ) / 10000000 ) | 0x30 );
-	serialWrite( ( ( data % 10000000 ) / 1000000 ) | 0x30 );	
-	serialWrite( ( ( data % 1000000 ) / 100000 ) | 0x30 );	
-	serialWrite( ( ( data % 100000 ) / 10000 ) | 0x30 );	
-	
-	if( DP0 ){
-		serialWrite( 46 );	// decimal point		
-	}else{
-		serialWrite( ( ( data % 10000 ) / 1000 ) | 0x30 );	// send the thousands position OR-ed for decimal to ASCII conversion.
-	}
-	serialWrite( ( ( data % 1000 ) / 100 ) | 0x30 );	// hundreds 
-	serialWrite( ( ( data % 100 ) / 10 ) | 0x30 );		// tens 
-	serialWrite( ( data % 10 ) | 0x30 );				// ones 
-	
-	if ( newline )
-	{
-		serialWrite( LINE_FEED );
-    	serialWrite( CARRIAGE_RETURN );	
-    }
-}
-#endif
-
-// For updating the display
-// 256 Hz
 ISR( TIMER0_OVF_vect )
 {	
-	#ifdef PSTRETCH_ENABLE
-		tmr0PulseStretch++;	
-	#endif
-	
-	#ifdef SERIAL_ENABLE
-		tmr0SerialPrint++;
-	#endif
-	
-	tmr0ZeroDisplay++;
-	
-	updateBubbleDisplay();
+	/* Increment the system tick counter. */
+    App_Scheduler_Bump_Sys_Tick();
 }
 
-#ifdef SLEEP_ENABLE
-// External Interrupt
 ISR( INT0_vect )
-{	
-}
-#endif
-
-
-uint16_t filter( uint16_t input ) 
 {
-	// FIR
-	uint32_t arraySum = 0;
-	
-	for( int i = 0; i < ARRAY_SIZE - 1; i++ )
-	{
-		filterArray[ i ] = filterArray[ i + 1 ];
-		arraySum += filterArray[ i ];
-	}
-	
-	filterArray[ ARRAY_SIZE - 1 ] = input;
-	arraySum += input;	
-		
-	return  arraySum / ARRAY_SIZE;   
-	
+    /* No code. Simply here to facilitate wake from sleep. */	
 }
 
-
-//todo make task
-void updateBubbleDisplay( void )
-{
-	static uint8_t myCathode;
-	
-	// The bubble display cathodes are connected to the AVR pins to sink current
-	// Set the AVR pin high to turn OFF the bubble display cathode.
-	// Set the AVR pin low to turn ON the bubble display cathode and sink current.
-#if 0
-	switch (myCathode)
-	{	
-	
-		case 0:	// thousands position
-			BUBBLE_CATH_PORT &= ~( 1 << CATH_0 );	
-			//BUBBLE_CATH_PORT |= ( 1 << CATH_1 );	
-			//BUBBLE_CATH_PORT |= ( 1 << CATH_2 );
-			BUBBLE_CATH_PORT |= ( 1 << CATH_3 );
-			sendDigitToBubble( bubbleOutput / 1000, DP0 );
-			break;
-			
-		case 1:	// hundreds	
-			BUBBLE_CATH_PORT |= ( 1 << CATH_0 );	// turn off the previous cathode 
-			BUBBLE_CATH_PORT &= ~( 1 << CATH_1 );	// turn on the current cathode	
-			//BUBBLE_CATH_PORT |= ( 1 << CATH_2 );	// no need to keep turning off cathodes that are already off
-			//BUBBLE_CATH_PORT |= ( 1 << CATH_3 );	
-			sendDigitToBubble( ( bubbleOutput % 1000 ) / 100, DP1 );
-			break;
-			
-		case 2: // tens	
-			//BUBBLE_CATH_PORT |= ( 1 << CATH_0 );	
-			BUBBLE_CATH_PORT |= ( 1 << CATH_1 );		
-			BUBBLE_CATH_PORT &= ~( 1 << CATH_2 );
-			//BUBBLE_CATH_PORT |= ( 1 << CATH_3 );
-			sendDigitToBubble( ( bubbleOutput % 100 ) / 10, DP2 );
-			break;
-		
-		case 3:	// ones
-			//BUBBLE_CATH_PORT |= ( 1 << CATH_0 );	
-			//BUBBLE_CATH_PORT |= ( 1 << CATH_1 );		
-			BUBBLE_CATH_PORT |= ( 1 << CATH_2 );
-			BUBBLE_CATH_PORT &= ~( 1 << CATH_3 );
-			sendDigitToBubble( bubbleOutput % 10, DP3 );
-			break;
-		
-		default:
-			break;
-	}
-
-	if( myCathode < 3 )
-	{
-		myCathode++;
-	}else{
-		myCathode = 0;
-	}
-	#endif
-}
-
-
-//~~~~~~~~~~~~~~~~~~~~~~******************** Functions ********************~~~~~~~~~~~~~~~~~~~~~~~~

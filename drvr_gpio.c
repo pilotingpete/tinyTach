@@ -7,6 +7,7 @@
 
 /* Tact switch */
 #define	SW1_PORT    PORTD
+#define SW1_INPUT   PIND
 #define SW1         PD2	
 
 		
@@ -41,5 +42,5 @@ void Drvr_GPIO_Led_On( void )
 
 uint8_t Drvr_GPIO_Switch_Is_Pressed( void )
 {
-	return bit_is_clear( SW1_PORT, SW1 );
+	return ( bit_is_clear( SW1_INPUT, SW1 ) != 0 );
 }

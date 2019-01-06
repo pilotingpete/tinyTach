@@ -40,6 +40,6 @@ extern void Drvr_Bubble_Display_Init( void );
  * \param[in] do_decimal is set to 1 to display the decimal point on the 
  * particular digit. Set to 0 to not display the decimal point.
  */ 
-extern void Drvr_Bubble_Display_Print( bubble_t *digit );
+extern void Drvr_Bubble_Display_Print( bubble_t *digit, uint8_t location );
 
 #endif /* _HEADER_GUARD_UUID_85186272_CD42_4099_9731_6F9E184727B4 */

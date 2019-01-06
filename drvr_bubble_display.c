@@ -179,12 +179,12 @@ void Drvr_Bubble_Display_Init( void )
 	BUBBLE_CATH_PORT |= ( ( 1 << CATH_0 ) | ( 1 << CATH_1 ) | ( 1 << CATH_2 ) | ( 1 << CATH_3 ) );
 }
 
-void Drvr_Bubble_Display_Print( bubble_t *digit )
+void Drvr_Bubble_Display_Print( bubble_t *digit, uint8_t location )
 {
 	/* Send the new digit out on the shift register. */
     build_bubble_byte( digit->number, digit->decimal );
     /* Select which bubble element to display on. */
-    select_bubble_element( digit->location );
+    select_bubble_element( location );
 }
 
 

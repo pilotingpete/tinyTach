@@ -1,8 +1,8 @@
 #include <avr/io.h>
 #include "drvr_serial.h"
 
-#define BaudRate 9600
-#define MYUBRR ((F_CPU / 16 / BaudRate ) - 1 )
+#define BaudRate 19200
+#define MYUBRR ( ( F_CPU / 16 / BaudRate ) - 1 )
 
 static uint8_t tx_ready(void)
 {
