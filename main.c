@@ -202,6 +202,7 @@ int main(void)
 	while(1)
 	{	
 
+#if 1
 
 	//_delay_ms(1000);
 		uint16_t speed;
@@ -217,12 +218,12 @@ int main(void)
 		}
 	
 
-        Task_Bubble_Display_Set_Bubble_Data( speed, 2 );
-
+        Task_Bubble_Display_Set_Bubble_Data( speed, 1 );
+#endif
 		/* Run all the tasks in tasks[] */
 		App_Scheduler_Run_Tasks( tasks );
         
-		#if 0
+	/*
 		// Input switch state
 		if( Drvr_GPIO_Switch_Is_Pressed() )
 		{
@@ -256,7 +257,9 @@ int main(void)
 			
 			Drvr_GPIO_Led_Off();
 		}
-		
+*/
+
+		#if 0	
 		// If a new frequency is ready for calculation
 		if( capture_state >= CAPTURE_RESULT_READY )	
 		{

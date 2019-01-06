@@ -38,8 +38,23 @@ void Task_Bubble_Display_Set_Bubble_Data( uint16_t *data, uint8_t decimal )
 	    /* Clear the bubble data structure */
 		memset( bubble_data, 0, sizeof( bubble_t ) * 4);
 	    
-	    /* Place the decimal point. */
-		bubble_data[decimal].decimal = 1;
+	    if( decimal == 0 )
+	    {
+            /* Place no decimal point */
+	    }
+	    else if( decimal == 5 )
+	    {
+            /* Turn on all the decimal points. */
+            for( uint8_t i = 0; i < 4; i++ )
+            {
+            	bubble_data[ i ].decimal = 1;
+            }
+	    }
+	    else
+	    {
+	    	/* Place a single decimal point. */
+		    bubble_data[ decimal - 1 ].decimal = 1;
+	    }
 
 		/* Thousands */
 		bubble_data[0].number = ( (uint16_t)data % 10000 ) / 1000;

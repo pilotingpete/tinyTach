@@ -7,7 +7,8 @@ extern void Task_Bubble_Display( void );
 /** Set the data to show on the bubble display.
  * 
  * \param *data pointer to the data to display
- * \param decimal
+ * \param decimal - pass 0 for no decimal points, 1::4 for leftmost to rightmost
+ * respectively, and 5 for all decimal points ON.
  */
 extern void Task_Bubble_Display_Set_Bubble_Data( uint16_t *data, uint8_t decimal );
 
