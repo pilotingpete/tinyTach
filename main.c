@@ -68,74 +68,27 @@ switchState		Bubble display / Serial output units
 #define TICK__1MS       ( 1000UL / TICK__TIME_US)
 #define TICK__100US     ( 100UL / TICK__TIME_US)
 
-#define CAPTURE_RESULT_READY	2
 
 
-volatile uint16_t tmr0ZeroDisplay = 0;
-
-
-
-#define LINE_FEED		10
-#define CARRIAGE_RETURN	13
-
-
-
-
-
-
-#define ARRAY_SIZE 			15		// moving average filter
-#define CYCLE_FILTER_LIM	6554	// 6554 clock cycles ~= 600 RPM, Don't filter speed data if slower 
-
-#define ZERO_DISPLAY_SPEED	3932	// 3932 clock cycles ~= 1000 RPM
-									// Don't zero the display after a timeout if totClockCycles is less ( speed is faster )  
-									// DO zero the display if you have never hit this threshold and a timeout has expired. 
-
-
-
-// display update rates
-#define TEN_SECONDS 	2550
-#define ONE_SECOND 		255	// number of timer0 overflows in one second
-#define HALF_SECOND		127
-#define QUARTER_SECOND	63
-
-#define SERIAL_SEND 	HALF_SECOND
-
-#define PULSE_STRETCH		1		// one timer0 overflow is ~= 4mS duration for retransmitting the PPR
-#define ZERO_DISPLAY_TIME	1280 	// timer0 overflows.
 
 #define CLK2CPM 		3932160	// Numerator for converting clock cycles to cycles per minute. ( 65536 * 60 ) 
 #define CLK2HZ			65536	// Numerator for converting clock cycles to cycles per second. ( 65536 * 1 )
 
-#ifdef SLEEP_ENABLE
-	#define MIN_SWITCHSTATE 0
-#else
-	#define MIN_SWITCHSTATE 1
-#endif
 
+#define MIN_SWITCHSTATE 0
 #define MAX_SWITCHSTATE 3
 
-
-
-//~~~~~~~~~~~~~~~~~~~~~******************** Definitions ********************~~~~~~~~~~~~~~~~~~~~~~~
-
-
-
-
-
-
-
-//~~~~~~~~~~~~~~~~~~~******************** Global Variables ********************~~~~~~~~~~~~~~~~~~~~
 
 volatile uint16_t bubbleOutput = 0;	// Sending data to the bubble display
 uint32_t serialOutput = 0;			// Sending data to the UART
 uint16_t cycPerMin = 0;				// DUT cycles per minute i.e. RPM
 uint16_t cycPerSec = 0;				// DUT cycles per second i.e. Hz
-uint32_t totClockCycles = 0;		// Clock cycles per part cycle i.e time per revolution
 
-uint16_t filterArray[ ARRAY_SIZE ];
 
-uint8_t switchState = 1;
 
+static char buff[10]; 
+static uint8_t switchState = 1;
+static uint32_t *period;
 
 
 
@@ -147,10 +100,7 @@ volatile uint8_t tmr0PulseStretch = 0;
 volatile uint8_t tmr0SerialPrint = 0;
 #endif
 
-volatile uint8_t DP0 = 0;
-volatile uint8_t DP1 = 0;
-volatile uint8_t DP2 = 0;
-volatile uint8_t DP3 = 0;
+
 
 uint8_t doZeroDisplay = 0;
 
@@ -166,6 +116,8 @@ static void sys_tick_isr_init(void)
 
 int main(void)
 {
+
+
 	Drvr_GPIO_Init();
 	Drvr_Bubble_Display_Init();
 	Drvr_Serial_Init();
@@ -179,8 +131,6 @@ int main(void)
     /* Global interrupt enable. */
     sei();
 
-
-
     /* Task list for the scheduler to run. */
     task_t tasks[] =
     {
@@ -193,11 +143,6 @@ int main(void)
   	    { 0 , 0, NULL }
     };
 
-	char buff[10]; 
-
-	Drvr_Serial_Print_String( "Reset.\n\r" );
-    
-	uint16_t data_hold = 0;
 
 	while(1)
 	{	
@@ -211,13 +156,18 @@ int main(void)
 		if( speed == 7000 ){ speed = 0; }
 	
 
-        Task_Bubble_Display_Set_Bubble_Data( speed, 1 );
+        
 #endif
 		/* Run all the tasks in tasks[] */
 		App_Scheduler_Run_Tasks( tasks );
-        Task_Bubble_Display_Set_Bubble_Data( 0, 0 );
-	
-		// Input switch state
+        
+        if( Drvr_Tach_Get_Capture_State() == CAPTURE_RESULT_READY )
+        { 
+            _delay_ms( 1000);
+            Drvr_Tach_Arm_Input_Capture();
+        }
+
+		/* Input switch state. */
 		if( Drvr_GPIO_Switch_Is_Pressed() )
 		{
 			switchState++;
@@ -228,11 +178,14 @@ int main(void)
 			}
 			
 			/* Show the new state on the bubble display for a while. */
-			Task_Bubble_Display_Set_Bubble_Data( switchState, 5 );
-			Task_Bubble_Display_Set_Data_Hold( 10 );
+			Task_Bubble_Display_Set_Bubble_Data( (uint16_t*)switchState, 5 );
+			Task_Bubble_Display_Set_Data_Hold( (uint16_t*)10 );
 			
 			Drvr_GPIO_Led_Off();
 		}
+
+		period = Drvr_Tach_Calc_Period();
+		Task_Bubble_Display_Set_Bubble_Data( (uint16_t*)period, 0 );
 
 
 		#if 0	
@@ -246,8 +199,7 @@ int main(void)
 				input_cap_2 += 65536;
 			}
 			
-			totClockCycles = input_cap_2 - input_cap_1;
-			totClockCycles += num_overflows_tmr_1 * 65536;
+			
 			
 			
 			// Prepare the data for outputting in the correct units.

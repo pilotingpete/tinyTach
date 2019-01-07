@@ -1,5 +1,9 @@
+#include <stdlib.h>
 #include <avr/io.h>
 #include <avr/interrupt.h>	
+#include "drvr_tach.h"
+
+
 
 /* Tach signal retransmit output */
 #define	REXMIT_PORT PORTD
@@ -9,6 +13,10 @@
 #define	IR_PORT    PORTD
 #define IR_INPUT   PD6		
 #define IR_ENABLE  PD3
+
+#define FIRST_CAPTURE 			0
+#define SECOND_CAPTURE			1
+
 
 /* Min of (65536 / 394) * 60 = ~9980 DUT cycles per minute. 
  * i.e this limits the max "RPM" to guard against false 
@@ -20,6 +28,9 @@ static volatile uint16_t input_cap_1 = 0;
 static volatile uint16_t input_cap_2 = 0;											
 static volatile uint8_t  capture_state = 0;
 static volatile uint32_t num_overflows_tmr_1 = 0;
+
+static uint32_t *total_clock_cycles = 0;
+
 
 static void disable_tach_timer_interrupts( void )
 {
@@ -78,6 +89,29 @@ void Drvr_Tach_Sensor_Enable( void )
 	IR_PORT |= ( 1 << IR_ENABLE );
 }
 
+uint8_t Drvr_Tach_Get_Capture_State( void )
+{
+	return capture_state;
+}
+
+void Drvr_Tach_Arm_Input_Capture( void )
+{
+	input_cap_1 = 0;
+    input_cap_2 = 0;											
+    capture_state = FIRST_CAPTURE;
+    num_overflows_tmr_1 = 0;
+
+    /* Enable timer overflow and input capture interrupts. */
+	TIMSK |= ( ( 1 << TOIE1 ) | ( 1 << ICIE1 ) );
+}
+
+uint32_t *Drvr_Tach_Calc_Period( void )
+{	
+	total_clock_cycles = (uint32_t)input_cap_2 - (uint32_t)input_cap_1;
+	total_clock_cycles += num_overflows_tmr_1 * (uint32_t)65536;
+
+	return total_clock_cycles;
+}
 
 /* For extending the input capture timing capability. */
 ISR( TIMER1_OVF_vect )
@@ -91,13 +125,13 @@ ISR( TIMER1_CAPT_vect )
 {
 	switch( capture_state )
 	{
-		case 1:
+		case FIRST_CAPTURE:
 		    /* First input capture time */
 			input_cap_1 = ICR1;	
 			capture_state++;
 			break;
 			
-		case 2:
+		case SECOND_CAPTURE:
 		    /* Second input capture time */
 			input_cap_2 = ICR1;	
 			
