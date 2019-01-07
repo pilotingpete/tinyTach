@@ -1,4 +1,5 @@
 #include <avr/io.h>
+#include <util/delay.h>	
 #include "drvr_gpio.h"
 
 /* LED */
@@ -48,5 +49,18 @@ void Drvr_GPIO_Led_On( void )
 
 uint8_t Drvr_GPIO_Switch_Is_Pressed( void )
 {
-	return ( bit_is_clear( SW1_INPUT, SW1 ) != 0 );
+	const uint8_t bounce_num = 40;
+	const uint8_t bounce_ms = 1;
+	uint8_t retval = 0;
+	uint8_t count = 0;
+
+	while( bit_is_clear( SW1_INPUT, SW1 ) )
+	{
+		if( count++ >= bounce_num )
+		{
+			retval = 1;
+		}
+		_delay_ms( bounce_ms );
+	}
+	return retval;
 }

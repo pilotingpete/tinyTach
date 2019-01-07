@@ -209,21 +209,14 @@ int main(void)
 		speed++;
 
 		if( speed == 7000 ){ speed = 0; }
-
-
-
-		if( Drvr_GPIO_Switch_Is_Pressed() )
-		{
-			Task_Bubble_Display_Set_Data_Hold( 50 );
-		}
 	
 
         Task_Bubble_Display_Set_Bubble_Data( speed, 1 );
 #endif
 		/* Run all the tasks in tasks[] */
 		App_Scheduler_Run_Tasks( tasks );
-        
-	/*
+        Task_Bubble_Display_Set_Bubble_Data( 0, 0 );
+	
 		// Input switch state
 		if( Drvr_GPIO_Switch_Is_Pressed() )
 		{
@@ -234,30 +227,13 @@ int main(void)
 				switchState = MIN_SWITCHSTATE;
 			}
 			
-			//sendDigitToBubble( switchState, 0 );
-			// Send the current state to the bubble display and serial if enabled
-			// Turn on all the decimal points for visual effect and parsing when post processing data
-			DP0 = 1;
-			DP1 = 1;
-			DP2 = 1;
-			DP3 = 1;
-			
-			bubbleOutput = switchState;	// Temporarily display the switchState on the bubble display.
-			
-			_delay_ms(1000);		
-			
-			// Clear display
-			bubbleOutput = 0;
-			
-			// Decimal points OFF
-			DP0 = 0;
-			DP1 = 0;
-			DP2 = 0;
-			DP3 = 0;
+			/* Show the new state on the bubble display for a while. */
+			Task_Bubble_Display_Set_Bubble_Data( switchState, 5 );
+			Task_Bubble_Display_Set_Data_Hold( 10 );
 			
 			Drvr_GPIO_Led_Off();
 		}
-*/
+
 
 		#if 0	
 		// If a new frequency is ready for calculation

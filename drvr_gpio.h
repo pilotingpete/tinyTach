@@ -27,7 +27,9 @@ extern void Drvr_GPIO_Led_Off( void );
 extern void Drvr_GPIO_Led_On( void );
 
 /** Function to interface the tactile switch onboard. 
- * \return 1 if the switch is pressed. Otherwise, return 0.
+ * Includes a blocking debounce.
+ * \return 1 if the switch is pressed, debounced, and released. 
+ * Otherwise, return 0.
  */
 extern uint8_t Drvr_GPIO_Switch_Is_Pressed( void );
 
