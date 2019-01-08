@@ -42,4 +42,8 @@ extern void Drvr_Bubble_Display_Init( void );
  */ 
 extern void Drvr_Bubble_Display_Print( bubble_t *digit, uint8_t location );
 
+/** Shifts out an empty byte to set the shift reg pins low.
+ */
+extern void Drvr_Bubble_Display_Shutdown( void );
+
 #endif /* _HEADER_GUARD_UUID_85186272_CD42_4099_9731_6F9E184727B4 */

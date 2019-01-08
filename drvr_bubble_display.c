@@ -187,4 +187,9 @@ void Drvr_Bubble_Display_Print( bubble_t *digit, uint8_t location )
     select_bubble_element( location );
 }
 
+void Drvr_Bubble_Display_Shutdown( void )
+{
+	shift_byte_out( 0b00000000 );
+}
+
 

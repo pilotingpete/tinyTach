@@ -28,7 +28,7 @@ void Drvr_GPIO_Init( void )
 	/* External interrupt. This allows the pushbutton to bring the tach out of 
      * the power down sleep mode 
      */
-    MCUCR |= ( 1 << ISC01 );	/* The falling edge of INT0 generates an interrupt request. */
+    //MCUCR |= ( 1 << ISC01 );	/* The falling edge of INT0 generates an interrupt request. */
     GIMSK |= ( 1 << INT0 );		/* External Interrupt Request 0 Enable. */
 }
 
@@ -49,7 +49,7 @@ void Drvr_GPIO_Led_On( void )
 
 uint8_t Drvr_GPIO_Switch_Is_Pressed( void )
 {
-	const uint8_t bounce_num = 40;
+	const uint8_t bounce_num = 25;
 	const uint8_t bounce_ms = 1;
 	uint8_t retval = 0;
 	uint8_t count = 0;

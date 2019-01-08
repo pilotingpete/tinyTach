@@ -19,13 +19,7 @@ switchState		Bubble display / Serial output units
 3				Period - Time between input pulses ( mS )		
 
 *~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~* Display States *~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*
-
-
-
-
 */
-
-//~~~~~~~~~~~~~~~~~~~~~~******************** Includes ********************~~~~~~~~~~~~~~~~~~~~~~~~~
 
 #include <avr/io.h>
 #include <avr/interrupt.h>							
@@ -43,15 +37,6 @@ switchState		Bubble display / Serial output units
 #include "task_serial.h"
 #include "task_bubble_display.h"
 #include "task_watchdog.h"
-
-//~~~~~~~~~~~~~~~~~~~~~~******************** Includes ********************~~~~~~~~~~~~~~~~~~~~~~~~~
-
-
-//~~~~~~~~~~~~~~~~~~~~~************** Pre-Processor Directives *************~~~~~~~~~~~~~~~~~~~~~~~
-#define SLEEP_ENABLE		// Hardware changes are necessary to make sleep modes useful.
-#define SERIAL_ENABLE		// Also disables period output
-#define PSTRETCH_ENABLE		// Pulse stretch output
-//~~~~~~~~~~~~~~~~~~~~~************** Pre-Processor Directives *************~~~~~~~~~~~~~~~~~~~~~~~
 
 /* The sysystem tick ISR fires at 524288 Hz, and it is an 8-bit timer
  * Therefore the tick counter rolls over at 524288 / 256 = 2048 Hz
@@ -113,22 +98,10 @@ int main(void)
 
 	while(1)
 	{	
-
-#if 1
-
-	//_delay_ms(1000);
-		uint16_t speed;
-		speed++;
-
-		if( speed == 7000 ){ speed = 0; }
-	
-
-        
-#endif
 		/* Run all the tasks in tasks[] */
 		App_Scheduler_Run_Tasks( tasks );
 
-		/* Input switch state. */
+		/* Scroll the input switch state. */
 		if( Drvr_GPIO_Switch_Is_Pressed() )
 		{
 			switchState++;
@@ -146,11 +119,7 @@ int main(void)
 			Drvr_GPIO_Led_Off();
 		}
 
-
-		    //itoa( Drvr_Tach_Get_Capture_State(), buff, 10 );
-	        //Drvr_Serial_Print_String( buff );
-	        //Drvr_Serial_Print_String( "\n\r" );
-
+		/* Get new input capture data if it is ready. */
 		if( Drvr_Tach_Get_Capture_State() == CAPTURE_RESULT_READY )
 		{
 			uint32_t freq = Drvr_Tach_Get_Freq();
@@ -161,6 +130,32 @@ int main(void)
 
 	        Drvr_GPIO_Led_Toggle();
         }
+
+        if( switchState == 0 )
+			{
+				/* Prepare to sleep. */
+				Task_Bubble_Display_Set_Bubble_Data( (uint16_t*)0, 0 );	
+			
+				/* Turn off IO pins to save power. */
+				Drvr_Tach_Rexmit_Off();
+				Drvr_GPIO_Led_Off();
+				Drvr_Tach_Sensor_Disable();
+						
+				/* Turn off the bubble display shift register. */
+				Drvr_Bubble_Display_Shutdown();
+			
+				/* Sleep. */
+				Drvr_Watchdog_Off();
+				sleep_enable();
+				sleep_cpu();		
+				/* We will resume execution here after an external interrupt. */
+			
+				/* Wake up! */
+				Drvr_Watchdog_Init();
+				sleep_disable();
+				/* Turn on the IR pickup. */
+				Drvr_Tach_Sensor_Enable();	
+			}
 
 		#if 0	
 		// If a new frequency is ready for calculation

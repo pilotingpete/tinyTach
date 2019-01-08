@@ -18,10 +18,6 @@
 #define FIRST_CAPTURE 			0
 #define SECOND_CAPTURE			1
 
-
-#define CLK2CPM 3932160	// Numerator for converting clock cycles to cycles per minute. ( 65536 * 60 ) 
-#define CLK2HZ  65536	// Numerator for converting clock cycles to cycles per second. ( 65536 * 1 )
-
 /* Min of (65536 / 394) * 60 = ~9980 DUT cycles per minute. 
  * i.e this limits the max "RPM" to guard against false 
  * positive triggers. 
