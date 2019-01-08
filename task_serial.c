@@ -2,21 +2,19 @@
 #include <avr/io.h>
 #include "task_serial.h"
 #include "drvr_serial.h"
+#include "drvr_tach.h"
 
 /* Serial output buffer. */
 char buff[10]; 
 
 void Task_Serial( void )
 {
-        Drvr_Serial_Print_String( "Serial Task\r\n" );
+        Drvr_Serial_Print_String( "Frequency Hz: " );
   
-        //ultoa( 46622342, buff, 10 );
-        //Drvr_Serial_Print_String( buff );
+        uint32_t freq = Drvr_Tach_Get_Freq();
 
-        //Drvr_Serial_Print_String( "\r\n" );
+		ultoa( freq, buff, 10 );
+        Drvr_Serial_Print_String( buff );
+        Drvr_Serial_Print_String( "\n\r" );
 
-        //ultoa( 123, buff, 10 );
-        //Drvr_Serial_Print_String( buff );
-
-        //Drvr_Serial_Print_String( "\r\n" );
 }

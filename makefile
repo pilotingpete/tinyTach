@@ -88,7 +88,6 @@ SRC = $(TARGET).c \
       drvr_watchdog.c \
       app_scheduler.c \
       task_serial.c \
-      task_b.c \
       task_bubble_display.c \
       task_watchdog.c
 

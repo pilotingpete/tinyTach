@@ -1,1 +1,0 @@
-extern void task_b( void );

@@ -29,15 +29,15 @@ extern void Drvr_Tach_Sensor_Disable( void );
  */
 extern void Drvr_Tach_Sensor_Enable( void );
 
-/** Calculate the input capture period.
+/** Get the input capture period.
  *
  * \return a pointer to the input capture clock cycles.
  */
-extern uint32_t *Drvr_Tach_Calc_Period( void );
+extern uint32_t Drvr_Tach_Get_Freq( void );
 
-/** Arm/rearm the input capture system.
+/** Rearm the input capture system.
  */
-extern void Drvr_Tach_Arm_Input_Capture( void );
+extern void Drvr_Tach_Rearm_Input_Capture( void );
 
 /** Getter for the capture state.
  *

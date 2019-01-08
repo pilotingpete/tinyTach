@@ -41,7 +41,6 @@ switchState		Bubble display / Serial output units
 
 #include "app_scheduler.h"
 #include "task_serial.h"
-#include "task_b.h"
 #include "task_bubble_display.h"
 #include "task_watchdog.h"
 
@@ -68,42 +67,13 @@ switchState		Bubble display / Serial output units
 #define TICK__1MS       ( 1000UL / TICK__TIME_US)
 #define TICK__100US     ( 100UL / TICK__TIME_US)
 
-
-
-
-#define CLK2CPM 		3932160	// Numerator for converting clock cycles to cycles per minute. ( 65536 * 60 ) 
-#define CLK2HZ			65536	// Numerator for converting clock cycles to cycles per second. ( 65536 * 1 )
-
-
 #define MIN_SWITCHSTATE 0
 #define MAX_SWITCHSTATE 3
 
 
-volatile uint16_t bubbleOutput = 0;	// Sending data to the bubble display
-uint32_t serialOutput = 0;			// Sending data to the UART
-uint16_t cycPerMin = 0;				// DUT cycles per minute i.e. RPM
-uint16_t cycPerSec = 0;				// DUT cycles per second i.e. Hz
-
-
-
 static char buff[10]; 
 static uint8_t switchState = 1;
-static uint32_t *period;
-
-
-
-#ifdef PSTRETCH_ENABLE
-volatile uint8_t tmr0PulseStretch = 0;
-#endif
-
-#ifdef SERIAL_ENABLE
-volatile uint8_t tmr0SerialPrint = 0;
-#endif
-
-
-
-uint8_t doZeroDisplay = 0;
-
+static uint32_t period;
 
 static void sys_tick_isr_init(void)
 {
@@ -116,8 +86,6 @@ static void sys_tick_isr_init(void)
 
 int main(void)
 {
-
-
 	Drvr_GPIO_Init();
 	Drvr_Bubble_Display_Init();
 	Drvr_Serial_Init();
@@ -159,12 +127,6 @@ int main(void)
 #endif
 		/* Run all the tasks in tasks[] */
 		App_Scheduler_Run_Tasks( tasks );
-        
-        if( Drvr_Tach_Get_Capture_State() == CAPTURE_RESULT_READY )
-        { 
-            _delay_ms( 1000);
-            Drvr_Tach_Arm_Input_Capture();
-        }
 
 		/* Input switch state. */
 		if( Drvr_GPIO_Switch_Is_Pressed() )
@@ -178,14 +140,27 @@ int main(void)
 			
 			/* Show the new state on the bubble display for a while. */
 			Task_Bubble_Display_Set_Bubble_Data( (uint16_t*)switchState, 5 );
-			Task_Bubble_Display_Set_Data_Hold( (uint16_t*)10 );
+			_delay_ms(500);//Task_Bubble_Display_Set_Data_Hold( (uint16_t*)10 );
+			Task_Bubble_Display_Set_Bubble_Data( (uint16_t*)0, 0 );
 			
 			Drvr_GPIO_Led_Off();
 		}
 
-		period = Drvr_Tach_Calc_Period();
-		Task_Bubble_Display_Set_Bubble_Data( (uint16_t*)period, 0 );
 
+		    //itoa( Drvr_Tach_Get_Capture_State(), buff, 10 );
+	        //Drvr_Serial_Print_String( buff );
+	        //Drvr_Serial_Print_String( "\n\r" );
+
+		if( Drvr_Tach_Get_Capture_State() == CAPTURE_RESULT_READY )
+		{
+			uint32_t freq = Drvr_Tach_Get_Freq();
+
+			Drvr_Tach_Rearm_Input_Capture();
+
+			Task_Bubble_Display_Set_Bubble_Data( (uint16_t*)freq, 0 );
+
+	        Drvr_GPIO_Led_Toggle();
+        }
 
 		#if 0	
 		// If a new frequency is ready for calculation

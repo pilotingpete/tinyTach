@@ -2,6 +2,7 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>	
 #include "drvr_tach.h"
+#include "drvr_gpio.h"
 
 
 
@@ -18,6 +19,9 @@
 #define SECOND_CAPTURE			1
 
 
+#define CLK2CPM 3932160	// Numerator for converting clock cycles to cycles per minute. ( 65536 * 60 ) 
+#define CLK2HZ  65536	// Numerator for converting clock cycles to cycles per second. ( 65536 * 1 )
+
 /* Min of (65536 / 394) * 60 = ~9980 DUT cycles per minute. 
  * i.e this limits the max "RPM" to guard against false 
  * positive triggers. 
@@ -29,13 +33,22 @@ static volatile uint16_t input_cap_2 = 0;
 static volatile uint8_t  capture_state = 0;
 static volatile uint32_t num_overflows_tmr_1 = 0;
 
-static uint32_t *total_clock_cycles = 0;
+static uint32_t total_clock_cycles = 0;
+static uint32_t frequency = 0;
 
 
 static void disable_tach_timer_interrupts( void )
 {
 	/* Disable timer capture and overflow interrupts */
     TIMSK &= ~( ( 1 << TOIE1 ) | ( 1 << ICIE1 ) );	
+}
+
+static void calc_freq( void )
+{	
+	total_clock_cycles = (uint32_t)input_cap_2 - (uint32_t)input_cap_1;
+	total_clock_cycles += num_overflows_tmr_1 * (uint32_t)65536;
+
+	frequency = F_CPU / total_clock_cycles;
 }
 
 
@@ -68,7 +81,6 @@ void Drvr_Tach_Init( void )
 	TIMSK |= ( 1 << ICIE1 );	/* Input capture interrupt */
 }
 
-
 void Drvr_Tach_Rexmit_Off( void )
 {
 	REXMIT_PORT &= ~( 1 << REXMIT );
@@ -94,23 +106,19 @@ uint8_t Drvr_Tach_Get_Capture_State( void )
 	return capture_state;
 }
 
-void Drvr_Tach_Arm_Input_Capture( void )
+void Drvr_Tach_Rearm_Input_Capture( void )
 {
-	input_cap_1 = 0;
-    input_cap_2 = 0;											
-    capture_state = FIRST_CAPTURE;
+	input_cap_1 = input_cap_2;								
+    capture_state = SECOND_CAPTURE;
     num_overflows_tmr_1 = 0;
 
     /* Enable timer overflow and input capture interrupts. */
 	TIMSK |= ( ( 1 << TOIE1 ) | ( 1 << ICIE1 ) );
 }
 
-uint32_t *Drvr_Tach_Calc_Period( void )
-{	
-	total_clock_cycles = (uint32_t)input_cap_2 - (uint32_t)input_cap_1;
-	total_clock_cycles += num_overflows_tmr_1 * (uint32_t)65536;
-
-	return total_clock_cycles;
+uint32_t Drvr_Tach_Get_Freq( void )
+{
+    return frequency;
 }
 
 /* For extending the input capture timing capability. */
@@ -135,10 +143,9 @@ ISR( TIMER1_CAPT_vect )
 		    /* Second input capture time */
 			input_cap_2 = ICR1;	
 			
-			if( input_cap_2 - input_cap_1 > MIN_CLK_CYCLES ) {
-				disable_tach_timer_interrupts();
-				capture_state++;
-			}
+			disable_tach_timer_interrupts();
+			calc_freq();
+			capture_state++;
 			break;
 		
 		default:
