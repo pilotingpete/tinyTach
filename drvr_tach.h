@@ -35,6 +35,10 @@ extern void Drvr_Tach_Sensor_Enable( void );
  */
 extern uint32_t *Drvr_Tach_Calc_Period( void );
 
+/** Arm/rearm the input capture system.
+ */
+extern void Drvr_Tach_Arm_Input_Capture( void );
+
 /** Getter for the capture state.
  *
  * \return capture_state
