@@ -52,13 +52,15 @@ switchState		Bubble display / Serial output units
 #define TICK__1MS       ( 1000UL / TICK__TIME_US)
 #define TICK__100US     ( 100UL / TICK__TIME_US)
 
-#define MIN_SWITCHSTATE 0
-#define MAX_SWITCHSTATE 3
-
-
 static char buff[10]; 
-static uint8_t switchState = 1;
-static uint32_t period;
+
+static uint8_t new_data = 0;
+
+static uint8_t switch_state = 1;
+const uint8_t min_switch_state = 0;
+const uint8_t max_switch_state = 3;
+
+static uint32_t clock_cycles = 0;
 
 static void sys_tick_isr_init(void)
 {
@@ -90,7 +92,7 @@ int main(void)
   	    { TICK__1000MS ,  0, Task_Serial },
         { TICK__100MS , 0, Task_Data_Hold },
         { TICK__2000MS , 0, Task_Watchdog },
-        //{ TICK__10MS , 0, Task_Bubble_Display },
+        //* { TICK__10MS , 0, Task_Bubble_Display }, */
         /* End of the task list. */
   	    { 0 , 0, NULL }
     };
@@ -98,42 +100,48 @@ int main(void)
 
 	while(1)
 	{	
-		/* Run all the tasks in tasks[] */
-		App_Scheduler_Run_Tasks( tasks );
-
 		/* Scroll the input switch state. */
 		if( Drvr_GPIO_Switch_Is_Pressed() )
 		{
-			switchState++;
 			
-			if( switchState > MAX_SWITCHSTATE )
+			if( ++switch_state > max_switch_state )
 			{	
-				switchState = MIN_SWITCHSTATE;
+				switch_state = min_switch_state;
 			}
 			
 			/* Show the new state on the bubble display for a while. */
-			Task_Bubble_Display_Set_Bubble_Data( (uint16_t*)switchState, 5 );
+			Task_Bubble_Display_Set_Bubble_Data( (uint16_t*)switch_state, 5 );
 			_delay_ms(500);//Task_Bubble_Display_Set_Data_Hold( (uint16_t*)10 );
 			Task_Bubble_Display_Set_Bubble_Data( (uint16_t*)0, 0 );
 			
 			Drvr_GPIO_Led_Off();
 		}
 
+		/* Run all the tasks in tasks[] */
+		App_Scheduler_Run_Tasks( tasks );
+
 		/* Get new input capture data if it is ready. */
 		if( Drvr_Tach_Get_Capture_State() == CAPTURE_RESULT_READY )
 		{
-			uint32_t freq = Drvr_Tach_Get_Freq();
+			clock_cycles = Drvr_Tach_Get_Clk_Cyc();
+
+			new_data = 1;
 
 			Drvr_Tach_Rearm_Input_Capture();
 
-			Task_Bubble_Display_Set_Bubble_Data( (uint16_t*)freq, 0 );
-
+            /* Visual indicator of input signal "quality" */
 	        Drvr_GPIO_Led_Toggle();
         }
 
-        if( switchState == 0 )
-			{
-				/* Prepare to sleep. */
+        /* Convert the output format and resolution. 
+         * Display the data value if new data has been delivered.
+         */
+        switch( switch_state ) 
+        {  
+
+            case 0: /* Go to sleep. */
+
+                /* Prepare to sleep. */
 				Task_Bubble_Display_Set_Bubble_Data( (uint16_t*)0, 0 );	
 			
 				/* Turn off IO pins to save power. */
@@ -147,15 +155,52 @@ int main(void)
 				/* Sleep. */
 				Drvr_Watchdog_Off();
 				sleep_enable();
-				sleep_cpu();		
-				/* We will resume execution here after an external interrupt. */
+				sleep_cpu();
+
+				/* We will resume execution here after an external interrupt
+				 * from the onboard tact switch. 
+				 */
 			
 				/* Wake up! */
 				Drvr_Watchdog_Init();
 				sleep_disable();
 				/* Turn on the IR pickup. */
 				Drvr_Tach_Sensor_Enable();	
-			}
+                
+            break;
+	
+            case 1: /* Display data in cycles per minute - cpm */
+                
+                if( new_data )
+                {
+                	const uint16_t output = ( F_CPU / 64 / clock_cycles ) * 60;
+                    Task_Bubble_Display_Set_Bubble_Data( (uint16_t*)output, 0 );     	
+                }
+
+            break;
+
+            case 2: /* Display data in cycles per second - Hz */
+
+                if( new_data )
+                {
+                	const uint16_t output = F_CPU / 64 / clock_cycles;
+                    Task_Bubble_Display_Set_Bubble_Data( (uint16_t*)output, 0 );     	
+                }
+                
+            break;
+
+            case 3: /* Display data as period - ms */
+                
+            break;
+  
+            default:
+            /* Not Expected */
+            break;
+        }
+
+        new_data = 0;
+
+
 
 		#if 0	
 		// If a new frequency is ready for calculation

@@ -27,11 +27,9 @@
 static volatile uint16_t input_cap_1 = 0;
 static volatile uint16_t input_cap_2 = 0;											
 static volatile uint8_t  capture_state = 0;
-static volatile uint32_t num_overflows_tmr_1 = 0;
+static volatile uint8_t num_overflows_tmr_1 = 0;
 
 static uint32_t total_clock_cycles = 0;
-static uint32_t frequency = 0;
-
 
 static void disable_tach_timer_interrupts( void )
 {
@@ -39,14 +37,15 @@ static void disable_tach_timer_interrupts( void )
     TIMSK &= ~( ( 1 << TOIE1 ) | ( 1 << ICIE1 ) );	
 }
 
-static void calc_freq( void )
+static void calc_clk_cyc( void )
 {	
+	const uint32_t ovf_val = 65536;
+
+	cli(); /* Disable interrupts during this calculation. */
 	total_clock_cycles = (uint32_t)input_cap_2 - (uint32_t)input_cap_1;
-	total_clock_cycles += num_overflows_tmr_1 * (uint32_t)65536;
-
-	frequency = F_CPU / total_clock_cycles;
+	total_clock_cycles += num_overflows_tmr_1 * ovf_val;
+	sei(); /* Reenable global interrupts */
 }
-
 
 void Drvr_Tach_Init( void )
 {
@@ -112,15 +111,23 @@ void Drvr_Tach_Rearm_Input_Capture( void )
 	TIMSK |= ( ( 1 << TOIE1 ) | ( 1 << ICIE1 ) );
 }
 
-uint32_t Drvr_Tach_Get_Freq( void )
+uint32_t Drvr_Tach_Get_Clk_Cyc( void )
 {
-    return frequency;
+	uint32_t check_cyc = 0;
+
+	do
+	{
+        check_cyc = total_clock_cycles;
+	}while( check_cyc != total_clock_cycles );
+
+    return total_clock_cycles;
 }
 
 /* For extending the input capture timing capability. */
 ISR( TIMER1_OVF_vect )
 {
-	if( num_overflows_tmr_1 < 255 ) /* Limit the overflows so this doesn't roll over too... */
+	/* Limit the overflows so this doesn't roll over too... */
+	if( num_overflows_tmr_1 < 255 ) 
 		num_overflows_tmr_1++;
 }
 
@@ -140,7 +147,7 @@ ISR( TIMER1_CAPT_vect )
 			input_cap_2 = ICR1;	
 			
 			disable_tach_timer_interrupts();
-			calc_freq();
+			calc_clk_cyc();
 			capture_state++;
 			break;
 		

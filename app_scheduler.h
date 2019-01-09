@@ -28,6 +28,9 @@ extern void App_Scheduler_Bump_Sys_Tick( void );
 
 /** Get the current value of the sys_tick counter.
  * 
+ * Since a 32-bit variable reads are non-atomic, the static variable
+ * is read twice to make it isn't being modified during a read.
+ *
  * \return the 32-bit sys_tick counter value. 
 */
 extern uint32_t App_Scheduler_Get_Sys_Tick( void );

@@ -190,6 +190,7 @@ void Drvr_Bubble_Display_Print( bubble_t *digit, uint8_t location )
 void Drvr_Bubble_Display_Shutdown( void )
 {
 	shift_byte_out( 0b00000000 );
+	BUBBLE_CATH_PORT |= ( ( 1 << CATH_0 ) | ( 1 << CATH_1 ) | ( 1 << CATH_2 ) | ( 1 << CATH_3 ) );
 }
 
 

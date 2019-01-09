@@ -11,9 +11,10 @@ void Task_Serial( void )
 {
         Drvr_Serial_Print_String( "Frequency Hz: " );
   
-        uint32_t freq = Drvr_Tach_Get_Freq();
+        uint32_t clk_cyc = Drvr_Tach_Get_Clk_Cyc();
 
-		ultoa( freq, buff, 10 );
+        Drvr_Serial_Print_String( "Clock Cycles: " );
+		ultoa( clk_cyc, buff, 10 );
         Drvr_Serial_Print_String( buff );
         Drvr_Serial_Print_String( "\n\r" );
 

@@ -29,13 +29,17 @@ extern void Drvr_Tach_Sensor_Disable( void );
  */
 extern void Drvr_Tach_Sensor_Enable( void );
 
-/** Get the input capture period.
+/** Get the total clock cycles.
  *
- * \return a pointer to the input capture clock cycles.
+ * Since a multi-byte variable reads are non-atomic, the static variable
+ * is read twice to make it isn't being modified during a read.
+ *
+ * \return the number of clock cycles between input capture events.
  */
-extern uint32_t Drvr_Tach_Get_Freq( void );
+extern uint32_t Drvr_Tach_Get_Clk_Cyc( void );
 
 /** Rearm the input capture system.
+ * This prepares the input capture system for the next input pulse.
  */
 extern void Drvr_Tach_Rearm_Input_Capture( void );
 

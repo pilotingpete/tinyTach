@@ -28,10 +28,6 @@ void App_Scheduler_Bump_Sys_Tick( void )
 
 uint32_t App_Scheduler_Get_Sys_Tick( void )
 {
-	/* Since a 32-bit variable reads are non-atomic
-	 * read twice to make sure sys_tick isn't being
-	 * modified during a read.
-	 */
 	uint32_t check_tick;
 
 	do
