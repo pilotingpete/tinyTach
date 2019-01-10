@@ -157,7 +157,7 @@ int main(void)
 				sleep_enable();
 				sleep_cpu();
 
-				/* We will resume execution here after an external interrupt
+				/* Execution will resume here after an external interrupt
 				 * from the onboard tact switch. 
 				 */
 			
@@ -190,11 +190,17 @@ int main(void)
             break;
 
             case 3: /* Display data as period - ms */
-                
+
+                if( new_data )
+                {
+                    const uint16_t output = ( 1000UL * (uint32_t)F_CPU ) / (uint32_t)clock_cycles;
+                    Task_Bubble_Display_Set_Bubble_Data( (uint16_t*)output, 0 );
+                }
+
             break;
   
             default:
-            /* Not Expected */
+                /* Not Expected */
             break;
         }
 
