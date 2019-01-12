@@ -1,0 +1,58 @@
+\@ifundefined {etoctocstyle}{\let \etoc@startlocaltoc \@gobble \let \etoc@settocdepth \@gobble \let \etoc@depthtag \@gobble \let \etoc@setlocaltop \@gobble }{}
+\contentsline {chapter}{\numberline {1}Class Index}{1}{chapter.1}
+\contentsline {section}{\numberline {1.1}Class List}{1}{section.1.1}
+\contentsline {chapter}{\numberline {2}File Index}{3}{chapter.2}
+\contentsline {section}{\numberline {2.1}File List}{3}{section.2.1}
+\contentsline {chapter}{\numberline {3}Class Documentation}{5}{chapter.3}
+\contentsline {section}{\numberline {3.1}bubble\discretionary {\unhbox \voidb@x \hbox {\relax \fontsize {7}{8}\selectfont $\leftarrow \joinrel \rhook $}}{}{}\_\discretionary {\unhbox \voidb@x \hbox {\relax \fontsize {7}{8}\selectfont $\leftarrow \joinrel \rhook $}}{}{}t Struct Reference}{5}{section.3.1}
+\contentsline {subsection}{\numberline {3.1.1}Detailed Description}{5}{subsection.3.1.1}
+\contentsline {subsection}{\numberline {3.1.2}Member Data Documentation}{5}{subsection.3.1.2}
+\contentsline {subsubsection}{\numberline {3.1.2.1}decimal}{5}{subsubsection.3.1.2.1}
+\contentsline {subsubsection}{\numberline {3.1.2.2}location}{5}{subsubsection.3.1.2.2}
+\contentsline {subsubsection}{\numberline {3.1.2.3}number}{6}{subsubsection.3.1.2.3}
+\contentsline {section}{\numberline {3.2}task\discretionary {\unhbox \voidb@x \hbox {\relax \fontsize {7}{8}\selectfont $\leftarrow \joinrel \rhook $}}{}{}\_\discretionary {\unhbox \voidb@x \hbox {\relax \fontsize {7}{8}\selectfont $\leftarrow \joinrel \rhook $}}{}{}t Struct Reference}{6}{section.3.2}
+\contentsline {chapter}{\numberline {4}File Documentation}{7}{chapter.4}
+\contentsline {section}{\numberline {4.1}src/app\discretionary {\unhbox \voidb@x \hbox {\relax \fontsize {7}{8}\selectfont $\leftarrow \joinrel \rhook $}}{}{}\_\discretionary {\unhbox \voidb@x \hbox {\relax \fontsize {7}{8}\selectfont $\leftarrow \joinrel \rhook $}}{}{}scheduler.h File Reference}{7}{section.4.1}
+\contentsline {subsection}{\numberline {4.1.1}Detailed Description}{7}{subsection.4.1.1}
+\contentsline {subsection}{\numberline {4.1.2}Function Documentation}{7}{subsection.4.1.2}
+\contentsline {subsubsection}{\numberline {4.1.2.1}App\_Scheduler\_Bump\_Sys\_Tick()}{7}{subsubsection.4.1.2.1}
+\contentsline {subsubsection}{\numberline {4.1.2.2}App\_Scheduler\_Get\_Sys\_Tick()}{8}{subsubsection.4.1.2.2}
+\contentsline {subsubsection}{\numberline {4.1.2.3}App\_Scheduler\_Run\_Tasks()}{8}{subsubsection.4.1.2.3}
+\contentsline {section}{\numberline {4.2}src/drvr\discretionary {\unhbox \voidb@x \hbox {\relax \fontsize {7}{8}\selectfont $\leftarrow \joinrel \rhook $}}{}{}\_\discretionary {\unhbox \voidb@x \hbox {\relax \fontsize {7}{8}\selectfont $\leftarrow \joinrel \rhook $}}{}{}bubble\discretionary {\unhbox \voidb@x \hbox {\relax \fontsize {7}{8}\selectfont $\leftarrow \joinrel \rhook $}}{}{}\_\discretionary {\unhbox \voidb@x \hbox {\relax \fontsize {7}{8}\selectfont $\leftarrow \joinrel \rhook $}}{}{}display.h File Reference}{8}{section.4.2}
+\contentsline {subsection}{\numberline {4.2.1}Detailed Description}{8}{subsection.4.2.1}
+\contentsline {subsection}{\numberline {4.2.2}Function Documentation}{9}{subsection.4.2.2}
+\contentsline {subsubsection}{\numberline {4.2.2.1}Drvr\_Bubble\_Display\_Init()}{9}{subsubsection.4.2.2.1}
+\contentsline {subsubsection}{\numberline {4.2.2.2}Drvr\_Bubble\_Display\_Print()}{9}{subsubsection.4.2.2.2}
+\contentsline {subsubsection}{\numberline {4.2.2.3}Drvr\_Bubble\_Display\_Shutdown()}{9}{subsubsection.4.2.2.3}
+\contentsline {section}{\numberline {4.3}src/drvr\discretionary {\unhbox \voidb@x \hbox {\relax \fontsize {7}{8}\selectfont $\leftarrow \joinrel \rhook $}}{}{}\_\discretionary {\unhbox \voidb@x \hbox {\relax \fontsize {7}{8}\selectfont $\leftarrow \joinrel \rhook $}}{}{}gpio.h File Reference}{9}{section.4.3}
+\contentsline {subsection}{\numberline {4.3.1}Detailed Description}{10}{subsection.4.3.1}
+\contentsline {subsection}{\numberline {4.3.2}Function Documentation}{10}{subsection.4.3.2}
+\contentsline {subsubsection}{\numberline {4.3.2.1}Drvr\_GPIO\_Init()}{10}{subsubsection.4.3.2.1}
+\contentsline {subsubsection}{\numberline {4.3.2.2}Drvr\_GPIO\_Led\_Off()}{10}{subsubsection.4.3.2.2}
+\contentsline {subsubsection}{\numberline {4.3.2.3}Drvr\_GPIO\_Led\_On()}{10}{subsubsection.4.3.2.3}
+\contentsline {subsubsection}{\numberline {4.3.2.4}Drvr\_GPIO\_Led\_Toggle()}{10}{subsubsection.4.3.2.4}
+\contentsline {subsubsection}{\numberline {4.3.2.5}Drvr\_GPIO\_Switch\_Is\_Pressed()}{10}{subsubsection.4.3.2.5}
+\contentsline {subsubsection}{\numberline {4.3.2.6}Drvr\_Retransmit\_Toggle()}{11}{subsubsection.4.3.2.6}
+\contentsline {section}{\numberline {4.4}src/drvr\discretionary {\unhbox \voidb@x \hbox {\relax \fontsize {7}{8}\selectfont $\leftarrow \joinrel \rhook $}}{}{}\_\discretionary {\unhbox \voidb@x \hbox {\relax \fontsize {7}{8}\selectfont $\leftarrow \joinrel \rhook $}}{}{}serial.h File Reference}{11}{section.4.4}
+\contentsline {subsection}{\numberline {4.4.1}Detailed Description}{11}{subsection.4.4.1}
+\contentsline {subsection}{\numberline {4.4.2}Function Documentation}{11}{subsection.4.4.2}
+\contentsline {subsubsection}{\numberline {4.4.2.1}Drvr\_Serial\_Init()}{11}{subsubsection.4.4.2.1}
+\contentsline {subsubsection}{\numberline {4.4.2.2}Drvr\_Serial\_Print\_String()}{11}{subsubsection.4.4.2.2}
+\contentsline {section}{\numberline {4.5}src/drvr\discretionary {\unhbox \voidb@x \hbox {\relax \fontsize {7}{8}\selectfont $\leftarrow \joinrel \rhook $}}{}{}\_\discretionary {\unhbox \voidb@x \hbox {\relax \fontsize {7}{8}\selectfont $\leftarrow \joinrel \rhook $}}{}{}tach.h File Reference}{11}{section.4.5}
+\contentsline {subsection}{\numberline {4.5.1}Detailed Description}{12}{subsection.4.5.1}
+\contentsline {subsection}{\numberline {4.5.2}Function Documentation}{12}{subsection.4.5.2}
+\contentsline {subsubsection}{\numberline {4.5.2.1}Drvr\_Tach\_Get\_Capture\_State()}{12}{subsubsection.4.5.2.1}
+\contentsline {subsubsection}{\numberline {4.5.2.2}Drvr\_Tach\_Get\_Clk\_Cyc()}{12}{subsubsection.4.5.2.2}
+\contentsline {subsubsection}{\numberline {4.5.2.3}Drvr\_Tach\_Init()}{13}{subsubsection.4.5.2.3}
+\contentsline {subsubsection}{\numberline {4.5.2.4}Drvr\_Tach\_Rearm\_Input\_Capture()}{13}{subsubsection.4.5.2.4}
+\contentsline {subsubsection}{\numberline {4.5.2.5}Drvr\_Tach\_Reset()}{13}{subsubsection.4.5.2.5}
+\contentsline {subsubsection}{\numberline {4.5.2.6}Drvr\_Tach\_Rexmit\_Off()}{13}{subsubsection.4.5.2.6}
+\contentsline {subsubsection}{\numberline {4.5.2.7}Drvr\_Tach\_Rexmit\_On()}{13}{subsubsection.4.5.2.7}
+\contentsline {subsubsection}{\numberline {4.5.2.8}Drvr\_Tach\_Sensor\_Disable()}{13}{subsubsection.4.5.2.8}
+\contentsline {subsubsection}{\numberline {4.5.2.9}Drvr\_Tach\_Sensor\_Enable()}{13}{subsubsection.4.5.2.9}
+\contentsline {section}{\numberline {4.6}src/drvr\discretionary {\unhbox \voidb@x \hbox {\relax \fontsize {7}{8}\selectfont $\leftarrow \joinrel \rhook $}}{}{}\_\discretionary {\unhbox \voidb@x \hbox {\relax \fontsize {7}{8}\selectfont $\leftarrow \joinrel \rhook $}}{}{}watchdog.h File Reference}{14}{section.4.6}
+\contentsline {subsection}{\numberline {4.6.1}Detailed Description}{14}{subsection.4.6.1}
+\contentsline {subsection}{\numberline {4.6.2}Function Documentation}{14}{subsection.4.6.2}
+\contentsline {subsubsection}{\numberline {4.6.2.1}Drvr\_Watchdog\_Init()}{14}{subsubsection.4.6.2.1}
+\contentsline {subsubsection}{\numberline {4.6.2.2}Drvr\_Watchdog\_Off()}{14}{subsubsection.4.6.2.2}
+\contentsline {subsubsection}{\numberline {4.6.2.3}Drvr\_Watchdog\_Pet()}{14}{subsubsection.4.6.2.3}

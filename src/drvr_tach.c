@@ -22,14 +22,14 @@
  * i.e this limits the max "RPM" to guard against false 
  * positive triggers. 
  */
-#define MIN_CLK_CYCLES    394		
+const uint16_t min_clk_cyc = 394;		
 
 static volatile uint16_t input_cap_1 = 0;
 static volatile uint16_t input_cap_2 = 0;											
 static volatile uint8_t  capture_state = 0;
 static volatile uint8_t num_overflows_tmr_1 = 0;
 
-const float filter_factor = 0.9f;
+//const float filter_factor = 0.9f;
 
 static uint32_t total_clock_cycles = 0;
 
@@ -48,8 +48,8 @@ static void calc_clk_cyc( void )
 	new_reading += num_overflows_tmr_1 * ovf_val;
 
 	/* Apply a 1st order IIR filter. */
-    total_clock_cycles = total_clock_cycles * filter_factor + new_reading;
-    //total_clock_cycles = total_clock_cycles - (total_clock_cycles >> 2 ) + new_reading;
+    //total_clock_cycles = total_clock_cycles * filter_factor + new_reading;
+    total_clock_cycles = total_clock_cycles - (total_clock_cycles >> 2 ) + new_reading;
 	sei(); /* Reenable global interrupts */
 }
 
@@ -80,6 +80,16 @@ void Drvr_Tach_Init( void )
 	/* Interrupt enable */
 	TIMSK |= ( 1 << TOIE1 );	/* Timer 1 overflow interrupt */
 	TIMSK |= ( 1 << ICIE1 );	/* Input capture interrupt */
+}
+
+void Drvr_Tach_Reset( void )
+{
+	cli(); /* Disable interrupts */
+	input_cap_1 = 0;
+    input_cap_2 = 0;											
+    capture_state = 0;
+    num_overflows_tmr_1 = 0;
+    sei(); /* Reenable interrupts */
 }
 
 void Drvr_Tach_Rexmit_Off( void )
@@ -127,8 +137,8 @@ uint32_t Drvr_Tach_Get_Clk_Cyc( void )
 	}while( check_cyc != total_clock_cycles );
 
 	/* Return filtered data. */
-    return total_clock_cycles / ( 1 - filter_factor);
-    //return ( total_clock_cycles >> 2 );
+    //return total_clock_cycles / ( 1 - filter_factor);
+    return ( total_clock_cycles >> 2 );
 }
 
 /* For extending the input capture timing capability. */
@@ -154,9 +164,13 @@ ISR( TIMER1_CAPT_vect )
 		    /* Second input capture time */
 			input_cap_2 = ICR1;	
 			
-			disable_tach_timer_interrupts();
-			calc_clk_cyc();
-			capture_state++;
+			/* If a plausible amount of time has passed. */
+			if( ( num_overflows_tmr_1 > 0 ) || ( ( input_cap_2 - input_cap_1 ) > min_clk_cyc ) )
+			{
+			    disable_tach_timer_interrupts();
+			    calc_clk_cyc();
+			    capture_state++;
+			}
 			break;
 		
 		default:

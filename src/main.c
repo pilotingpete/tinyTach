@@ -90,8 +90,7 @@ int main(void)
 			
 			/* Show the new state on the bubble display for a while. */
 			Task_Bubble_Display_Set_Bubble_Data( (uint16_t*)switch_state, 5 );
-			_delay_ms(500);//Task_Bubble_Display_Set_Data_Hold( (uint16_t*)10 );
-			Task_Bubble_Display_Set_Bubble_Data( (uint16_t*)0, 0 );
+			Task_Bubble_Display_Set_Data_Hold( (uint16_t*)10 );
 			
 			Drvr_GPIO_Led_Off();
 		}
@@ -146,6 +145,7 @@ int main(void)
 				 */
 			
 				/* Wake up! */
+				Drvr_Tach_Reset();
 				Drvr_Watchdog_Init();
 				sleep_disable();
 				/* Turn on the IR pickup. */
@@ -167,8 +167,9 @@ int main(void)
 
                 if( new_data )
                 {
-                	const uint16_t output = F_CPU / 64 / clock_cycles;
-                    Task_Bubble_Display_Set_Bubble_Data( (uint16_t*)output, 0 );     	
+                	/* Display Hz with xx.xx precision */
+                	const uint16_t output = 100 * F_CPU / 64 / clock_cycles;
+                    Task_Bubble_Display_Set_Bubble_Data( (uint16_t*)output, 2 );     	
                 }
                 
             break;
@@ -177,8 +178,21 @@ int main(void)
 
                 if( new_data )
                 {
-                    const uint16_t output = ( 10000 * clock_cycles ) / ( F_CPU / 64 );
-                    Task_Bubble_Display_Set_Bubble_Data( (uint16_t*)output, 3 );
+                	uint16_t output = 0;
+
+                    /* Autoscale the bubble display */
+                	if( clock_cycles > 62500 )
+                	{
+                		/* Display in seconds with xx.xx precision. */
+                        output = ( 100 * clock_cycles ) / ( F_CPU / 64 );
+                        Task_Bubble_Display_Set_Bubble_Data( (uint16_t*)output, 2 );
+                	}
+                	else
+                	{
+                		/* Display in miliseconds with xxx.x precision */
+                        output = ( 10000 * clock_cycles ) / ( F_CPU / 64 );
+                        Task_Bubble_Display_Set_Bubble_Data( (uint16_t*)output, 3 );
+                    }
                 }
 
             break;

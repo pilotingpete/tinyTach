@@ -1,0 +1,102 @@
+\hypertarget{drvr__tach_8h}{}\section{src/drvr\+\_\+tach.h File Reference}
+\label{drvr__tach_8h}\index{src/drvr\_tach.h@{src/drvr\_tach.h}}
+\subsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{drvr__tach_8h_a70f0cda7816944526c90ecc31a346c46}\label{drvr__tach_8h_a70f0cda7816944526c90ecc31a346c46}} 
+\#define {\bfseries C\+A\+P\+T\+U\+R\+E\+\_\+\+R\+E\+S\+U\+L\+T\+\_\+\+R\+E\+A\+DY}~2
+\end{DoxyCompactItemize}
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \mbox{\hyperlink{drvr__tach_8h_a52364a5dfa7cb1ce6acb49b7ab8d7a6e}{Drvr\+\_\+\+Tach\+\_\+\+Init}} (void)
+\item 
+void \mbox{\hyperlink{drvr__tach_8h_a4abc5ebdeb1b14928fb1b565cb5a65a7}{Drvr\+\_\+\+Tach\+\_\+\+Reset}} (void)
+\item 
+void \mbox{\hyperlink{drvr__tach_8h_a0e86480aeeff637c36dc3d827b1a89de}{Drvr\+\_\+\+Tach\+\_\+\+Rexmit\+\_\+\+Off}} (void)
+\item 
+void \mbox{\hyperlink{drvr__tach_8h_a0ae691f3e5232086fdae2b6c1a96830d}{Drvr\+\_\+\+Tach\+\_\+\+Rexmit\+\_\+\+On}} (void)
+\item 
+void \mbox{\hyperlink{drvr__tach_8h_a521bbbd4c22663b4984f55aa92ae2ebe}{Drvr\+\_\+\+Tach\+\_\+\+Sensor\+\_\+\+Disable}} (void)
+\item 
+void \mbox{\hyperlink{drvr__tach_8h_afa78855033c869264880af0277cb4e36}{Drvr\+\_\+\+Tach\+\_\+\+Sensor\+\_\+\+Enable}} (void)
+\item 
+uint32\+\_\+t \mbox{\hyperlink{drvr__tach_8h_abf50577135e9e6edf4de85d58082491b}{Drvr\+\_\+\+Tach\+\_\+\+Get\+\_\+\+Clk\+\_\+\+Cyc}} (void)
+\item 
+void \mbox{\hyperlink{drvr__tach_8h_a581884ceed1069af32800d7a5c161840}{Drvr\+\_\+\+Tach\+\_\+\+Rearm\+\_\+\+Input\+\_\+\+Capture}} (void)
+\item 
+uint8\+\_\+t \mbox{\hyperlink{drvr__tach_8h_a7a04f9fc44860a2f7e11f83a893c753c}{Drvr\+\_\+\+Tach\+\_\+\+Get\+\_\+\+Capture\+\_\+\+State}} (void)
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+This module contains I\+SR config, G\+P\+IO setup, and calculations related to the tachometer function. 
+
+\subsection{Function Documentation}
+\mbox{\Hypertarget{drvr__tach_8h_a7a04f9fc44860a2f7e11f83a893c753c}\label{drvr__tach_8h_a7a04f9fc44860a2f7e11f83a893c753c}} 
+\index{drvr\_tach.h@{drvr\_tach.h}!Drvr\_Tach\_Get\_Capture\_State@{Drvr\_Tach\_Get\_Capture\_State}}
+\index{Drvr\_Tach\_Get\_Capture\_State@{Drvr\_Tach\_Get\_Capture\_State}!drvr\_tach.h@{drvr\_tach.h}}
+\subsubsection{\texorpdfstring{Drvr\_Tach\_Get\_Capture\_State()}{Drvr\_Tach\_Get\_Capture\_State()}}
+{\footnotesize\ttfamily uint8\+\_\+t Drvr\+\_\+\+Tach\+\_\+\+Get\+\_\+\+Capture\+\_\+\+State (\begin{DoxyParamCaption}\item[{void}]{ }\end{DoxyParamCaption})}
+
+Getter for the capture state.
+
+\begin{DoxyReturn}{Returns}
+capture\+\_\+state 0 -\/$>$ no capture events registered. 1 -\/$>$ first capture event complete. 2 -\/$>$ second capture event complete. -\/ ready for calculation. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{drvr__tach_8h_abf50577135e9e6edf4de85d58082491b}\label{drvr__tach_8h_abf50577135e9e6edf4de85d58082491b}} 
+\index{drvr\_tach.h@{drvr\_tach.h}!Drvr\_Tach\_Get\_Clk\_Cyc@{Drvr\_Tach\_Get\_Clk\_Cyc}}
+\index{Drvr\_Tach\_Get\_Clk\_Cyc@{Drvr\_Tach\_Get\_Clk\_Cyc}!drvr\_tach.h@{drvr\_tach.h}}
+\subsubsection{\texorpdfstring{Drvr\_Tach\_Get\_Clk\_Cyc()}{Drvr\_Tach\_Get\_Clk\_Cyc()}}
+{\footnotesize\ttfamily uint32\+\_\+t Drvr\+\_\+\+Tach\+\_\+\+Get\+\_\+\+Clk\+\_\+\+Cyc (\begin{DoxyParamCaption}\item[{void}]{ }\end{DoxyParamCaption})}
+
+Get the total clock cycles.
+
+Since a multi-\/byte variable reads are non-\/atomic, the static variable is read twice to make it isn\textquotesingle{}t being modified during a read.
+
+\begin{DoxyReturn}{Returns}
+the number of clock cycles between input capture events. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{drvr__tach_8h_a52364a5dfa7cb1ce6acb49b7ab8d7a6e}\label{drvr__tach_8h_a52364a5dfa7cb1ce6acb49b7ab8d7a6e}} 
+\index{drvr\_tach.h@{drvr\_tach.h}!Drvr\_Tach\_Init@{Drvr\_Tach\_Init}}
+\index{Drvr\_Tach\_Init@{Drvr\_Tach\_Init}!drvr\_tach.h@{drvr\_tach.h}}
+\subsubsection{\texorpdfstring{Drvr\_Tach\_Init()}{Drvr\_Tach\_Init()}}
+{\footnotesize\ttfamily void Drvr\+\_\+\+Tach\+\_\+\+Init (\begin{DoxyParamCaption}\item[{void}]{ }\end{DoxyParamCaption})}
+
+Initialize the tach driver. This shoud be called from main() prior to using this module. \mbox{\Hypertarget{drvr__tach_8h_a581884ceed1069af32800d7a5c161840}\label{drvr__tach_8h_a581884ceed1069af32800d7a5c161840}} 
+\index{drvr\_tach.h@{drvr\_tach.h}!Drvr\_Tach\_Rearm\_Input\_Capture@{Drvr\_Tach\_Rearm\_Input\_Capture}}
+\index{Drvr\_Tach\_Rearm\_Input\_Capture@{Drvr\_Tach\_Rearm\_Input\_Capture}!drvr\_tach.h@{drvr\_tach.h}}
+\subsubsection{\texorpdfstring{Drvr\_Tach\_Rearm\_Input\_Capture()}{Drvr\_Tach\_Rearm\_Input\_Capture()}}
+{\footnotesize\ttfamily void Drvr\+\_\+\+Tach\+\_\+\+Rearm\+\_\+\+Input\+\_\+\+Capture (\begin{DoxyParamCaption}\item[{void}]{ }\end{DoxyParamCaption})}
+
+Rearm the input capture system. This prepares the input capture system for the next input pulse. \mbox{\Hypertarget{drvr__tach_8h_a4abc5ebdeb1b14928fb1b565cb5a65a7}\label{drvr__tach_8h_a4abc5ebdeb1b14928fb1b565cb5a65a7}} 
+\index{drvr\_tach.h@{drvr\_tach.h}!Drvr\_Tach\_Reset@{Drvr\_Tach\_Reset}}
+\index{Drvr\_Tach\_Reset@{Drvr\_Tach\_Reset}!drvr\_tach.h@{drvr\_tach.h}}
+\subsubsection{\texorpdfstring{Drvr\_Tach\_Reset()}{Drvr\_Tach\_Reset()}}
+{\footnotesize\ttfamily void Drvr\+\_\+\+Tach\+\_\+\+Reset (\begin{DoxyParamCaption}\item[{void}]{ }\end{DoxyParamCaption})}
+
+Reinitialize tach counters to zero. \mbox{\Hypertarget{drvr__tach_8h_a0e86480aeeff637c36dc3d827b1a89de}\label{drvr__tach_8h_a0e86480aeeff637c36dc3d827b1a89de}} 
+\index{drvr\_tach.h@{drvr\_tach.h}!Drvr\_Tach\_Rexmit\_Off@{Drvr\_Tach\_Rexmit\_Off}}
+\index{Drvr\_Tach\_Rexmit\_Off@{Drvr\_Tach\_Rexmit\_Off}!drvr\_tach.h@{drvr\_tach.h}}
+\subsubsection{\texorpdfstring{Drvr\_Tach\_Rexmit\_Off()}{Drvr\_Tach\_Rexmit\_Off()}}
+{\footnotesize\ttfamily void Drvr\+\_\+\+Tach\+\_\+\+Rexmit\+\_\+\+Off (\begin{DoxyParamCaption}\item[{void}]{ }\end{DoxyParamCaption})}
+
+Turn O\+FF the retransmit pin. \mbox{\Hypertarget{drvr__tach_8h_a0ae691f3e5232086fdae2b6c1a96830d}\label{drvr__tach_8h_a0ae691f3e5232086fdae2b6c1a96830d}} 
+\index{drvr\_tach.h@{drvr\_tach.h}!Drvr\_Tach\_Rexmit\_On@{Drvr\_Tach\_Rexmit\_On}}
+\index{Drvr\_Tach\_Rexmit\_On@{Drvr\_Tach\_Rexmit\_On}!drvr\_tach.h@{drvr\_tach.h}}
+\subsubsection{\texorpdfstring{Drvr\_Tach\_Rexmit\_On()}{Drvr\_Tach\_Rexmit\_On()}}
+{\footnotesize\ttfamily void Drvr\+\_\+\+Tach\+\_\+\+Rexmit\+\_\+\+On (\begin{DoxyParamCaption}\item[{void}]{ }\end{DoxyParamCaption})}
+
+Turn ON the retransmit pin \mbox{\Hypertarget{drvr__tach_8h_a521bbbd4c22663b4984f55aa92ae2ebe}\label{drvr__tach_8h_a521bbbd4c22663b4984f55aa92ae2ebe}} 
+\index{drvr\_tach.h@{drvr\_tach.h}!Drvr\_Tach\_Sensor\_Disable@{Drvr\_Tach\_Sensor\_Disable}}
+\index{Drvr\_Tach\_Sensor\_Disable@{Drvr\_Tach\_Sensor\_Disable}!drvr\_tach.h@{drvr\_tach.h}}
+\subsubsection{\texorpdfstring{Drvr\_Tach\_Sensor\_Disable()}{Drvr\_Tach\_Sensor\_Disable()}}
+{\footnotesize\ttfamily void Drvr\+\_\+\+Tach\+\_\+\+Sensor\+\_\+\+Disable (\begin{DoxyParamCaption}\item[{void}]{ }\end{DoxyParamCaption})}
+
+Turn O\+FF the IR emitter pin. \mbox{\Hypertarget{drvr__tach_8h_afa78855033c869264880af0277cb4e36}\label{drvr__tach_8h_afa78855033c869264880af0277cb4e36}} 
+\index{drvr\_tach.h@{drvr\_tach.h}!Drvr\_Tach\_Sensor\_Enable@{Drvr\_Tach\_Sensor\_Enable}}
+\index{Drvr\_Tach\_Sensor\_Enable@{Drvr\_Tach\_Sensor\_Enable}!drvr\_tach.h@{drvr\_tach.h}}
+\subsubsection{\texorpdfstring{Drvr\_Tach\_Sensor\_Enable()}{Drvr\_Tach\_Sensor\_Enable()}}
+{\footnotesize\ttfamily void Drvr\+\_\+\+Tach\+\_\+\+Sensor\+\_\+\+Enable (\begin{DoxyParamCaption}\item[{void}]{ }\end{DoxyParamCaption})}
+
+Turn ON the IR emitter pin 

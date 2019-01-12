@@ -13,6 +13,10 @@
  */
 extern void Drvr_Tach_Init( void );
 
+/** Reinitialize tach counters to zero.
+ */
+extern void Drvr_Tach_Reset( void );
+
 /** Turn OFF the retransmit pin.
  */
 extern void Drvr_Tach_Rexmit_Off( void );
