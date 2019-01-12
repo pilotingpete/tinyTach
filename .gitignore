@@ -1,5 +1,6 @@
 .doxygen
 .dep
+.DS_Store
 *.o
 *.eep
 *.lss
