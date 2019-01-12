@@ -29,7 +29,7 @@ static volatile uint16_t input_cap_2 = 0;
 static volatile uint8_t  capture_state = 0;
 static volatile uint8_t num_overflows_tmr_1 = 0;
 
-//const float filter_factor = 0.9f;
+const float filter_factor = 0.9f;
 
 static uint32_t total_clock_cycles = 0;
 
@@ -48,8 +48,8 @@ static void calc_clk_cyc( void )
 	new_reading += num_overflows_tmr_1 * ovf_val;
 
 	/* Apply a 1st order IIR filter. */
-    //total_clock_cycles = total_clock_cycles * filter_factor + new_reading;
-    total_clock_cycles = total_clock_cycles - (total_clock_cycles >> 2 ) + new_reading;
+    total_clock_cycles = total_clock_cycles * filter_factor + new_reading;
+    //total_clock_cycles = total_clock_cycles - (total_clock_cycles >> 2 ) + new_reading;
 	sei(); /* Reenable global interrupts */
 }
 
@@ -127,8 +127,8 @@ uint32_t Drvr_Tach_Get_Clk_Cyc( void )
 	}while( check_cyc != total_clock_cycles );
 
 	/* Return filtered data. */
-    //return total_clock_cycles / ( 1 - filter_factor);
-    return ( total_clock_cycles >> 2 );
+    return total_clock_cycles / ( 1 - filter_factor);
+    //return ( total_clock_cycles >> 2 );
 }
 
 /* For extending the input capture timing capability. */
