@@ -10,6 +10,8 @@ void \mbox{\hyperlink{drvr__gpio_8h_aa43a38fd15b593548c5d5a315ea9bee6}{Drvr\+\_\
 void \mbox{\hyperlink{drvr__gpio_8h_a63e4b06c2934e2cf87e5885eb3195c3b}{Drvr\+\_\+\+G\+P\+I\+O\+\_\+\+Led\+\_\+\+Off}} (void)
 \item 
 void \mbox{\hyperlink{drvr__gpio_8h_a06b4cdc9925cd68ef9d1392591b2b764}{Drvr\+\_\+\+G\+P\+I\+O\+\_\+\+Led\+\_\+\+On}} (void)
+\item 
+uint8\+\_\+t \mbox{\hyperlink{drvr__gpio_8h_a33ff2d80852c75d7bdf39cee8bbc71a9}{Drvr\+\_\+\+G\+P\+I\+O\+\_\+\+Switch\+\_\+\+Is\+\_\+\+Pressed}} (void)
 \end{DoxyCompactItemize}
 
 
@@ -41,4 +43,12 @@ Turn ON the green board L\+ED. Calling this function when the L\+ED is ON alread
 \subsubsection{\texorpdfstring{Drvr\_GPIO\_Led\_Toggle()}{Drvr\_GPIO\_Led\_Toggle()}}
 {\footnotesize\ttfamily void Drvr\+\_\+\+G\+P\+I\+O\+\_\+\+Led\+\_\+\+Toggle (\begin{DoxyParamCaption}\item[{void}]{ }\end{DoxyParamCaption})}
 
-Toggle the green board L\+ED. Calling this function will turn ON the L\+ED if it is O\+FF and vice versa. 
+Toggle the green board L\+ED. Calling this function will turn ON the L\+ED if it is O\+FF and vice versa. \mbox{\Hypertarget{drvr__gpio_8h_a33ff2d80852c75d7bdf39cee8bbc71a9}\label{drvr__gpio_8h_a33ff2d80852c75d7bdf39cee8bbc71a9}} 
+\index{drvr\_gpio.h@{drvr\_gpio.h}!Drvr\_GPIO\_Switch\_Is\_Pressed@{Drvr\_GPIO\_Switch\_Is\_Pressed}}
+\index{Drvr\_GPIO\_Switch\_Is\_Pressed@{Drvr\_GPIO\_Switch\_Is\_Pressed}!drvr\_gpio.h@{drvr\_gpio.h}}
+\subsubsection{\texorpdfstring{Drvr\_GPIO\_Switch\_Is\_Pressed()}{Drvr\_GPIO\_Switch\_Is\_Pressed()}}
+{\footnotesize\ttfamily uint8\+\_\+t Drvr\+\_\+\+G\+P\+I\+O\+\_\+\+Switch\+\_\+\+Is\+\_\+\+Pressed (\begin{DoxyParamCaption}\item[{void}]{ }\end{DoxyParamCaption})}
+
+Function to interface the tactile switch onboard. Includes a blocking debounce. \begin{DoxyReturn}{Returns}
+1 if the switch is pressed, debounced, and released. Otherwise, return 0. 
+\end{DoxyReturn}

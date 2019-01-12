@@ -1,0 +1,36 @@
+\hypertarget{drvr__watchdog_8h}{}\section{drvr\+\_\+watchdog.\+h File Reference}
+\label{drvr__watchdog_8h}\index{drvr\_watchdog.h@{drvr\_watchdog.h}}
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \mbox{\hyperlink{drvr__watchdog_8h_ad9df5ed127798059a2c0ffa138e8fa10}{Drvr\+\_\+\+Watchdog\+\_\+\+Init}} (void)
+\item 
+void \mbox{\hyperlink{drvr__watchdog_8h_aea00a7502c6231b7869e77408593045a}{Drvr\+\_\+\+Watchdog\+\_\+\+Off}} (void)
+\item 
+void \mbox{\hyperlink{drvr__watchdog_8h_acce34b3682d156beb2d23de77bd02be1}{Drvr\+\_\+\+Watchdog\+\_\+\+Pet}} (void)
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+A driver for the watchdog timer. 
+
+\subsection{Function Documentation}
+\mbox{\Hypertarget{drvr__watchdog_8h_ad9df5ed127798059a2c0ffa138e8fa10}\label{drvr__watchdog_8h_ad9df5ed127798059a2c0ffa138e8fa10}} 
+\index{drvr\_watchdog.h@{drvr\_watchdog.h}!Drvr\_Watchdog\_Init@{Drvr\_Watchdog\_Init}}
+\index{Drvr\_Watchdog\_Init@{Drvr\_Watchdog\_Init}!drvr\_watchdog.h@{drvr\_watchdog.h}}
+\subsubsection{\texorpdfstring{Drvr\_Watchdog\_Init()}{Drvr\_Watchdog\_Init()}}
+{\footnotesize\ttfamily void Drvr\+\_\+\+Watchdog\+\_\+\+Init (\begin{DoxyParamCaption}\item[{void}]{ }\end{DoxyParamCaption})}
+
+Initialize the watchdog timer. This shoud be called from main() prior to using this module. \mbox{\Hypertarget{drvr__watchdog_8h_aea00a7502c6231b7869e77408593045a}\label{drvr__watchdog_8h_aea00a7502c6231b7869e77408593045a}} 
+\index{drvr\_watchdog.h@{drvr\_watchdog.h}!Drvr\_Watchdog\_Off@{Drvr\_Watchdog\_Off}}
+\index{Drvr\_Watchdog\_Off@{Drvr\_Watchdog\_Off}!drvr\_watchdog.h@{drvr\_watchdog.h}}
+\subsubsection{\texorpdfstring{Drvr\_Watchdog\_Off()}{Drvr\_Watchdog\_Off()}}
+{\footnotesize\ttfamily void Drvr\+\_\+\+Watchdog\+\_\+\+Off (\begin{DoxyParamCaption}\item[{void}]{ }\end{DoxyParamCaption})}
+
+Disable the watchdog timer. \mbox{\Hypertarget{drvr__watchdog_8h_acce34b3682d156beb2d23de77bd02be1}\label{drvr__watchdog_8h_acce34b3682d156beb2d23de77bd02be1}} 
+\index{drvr\_watchdog.h@{drvr\_watchdog.h}!Drvr\_Watchdog\_Pet@{Drvr\_Watchdog\_Pet}}
+\index{Drvr\_Watchdog\_Pet@{Drvr\_Watchdog\_Pet}!drvr\_watchdog.h@{drvr\_watchdog.h}}
+\subsubsection{\texorpdfstring{Drvr\_Watchdog\_Pet()}{Drvr\_Watchdog\_Pet()}}
+{\footnotesize\ttfamily void Drvr\+\_\+\+Watchdog\+\_\+\+Pet (\begin{DoxyParamCaption}\item[{void}]{ }\end{DoxyParamCaption})}
+
+Service the watchdog timer system to show we are alive still. 

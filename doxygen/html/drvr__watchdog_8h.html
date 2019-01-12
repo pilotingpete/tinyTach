@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.15"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Tiny Tach: bubble_t Struct Reference</title>
+<title>Tiny Tach: drvr_watchdog.h File Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -62,75 +62,83 @@ $(function() {
 </div><!-- top -->
 <div class="header">
   <div class="summary">
-<a href="#pub-attribs">Public Attributes</a> &#124;
-<a href="structbubble__t-members.html">List of all members</a>  </div>
+<a href="#func-members">Functions</a>  </div>
   <div class="headertitle">
-<div class="title">bubble_t Struct Reference</div>  </div>
+<div class="title">drvr_watchdog.h File Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
 
-<p><code>#include &lt;<a class="el" href="drvr__bubble__display_8h_source.html">drvr_bubble_display.h</a>&gt;</code></p>
+<p><a href="drvr__watchdog_8h_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
-Public Attributes</h2></td></tr>
-<tr class="memitem:a73771648a59844fc109bd68e4a1a44de"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structbubble__t.html#a73771648a59844fc109bd68e4a1a44de">number</a></td></tr>
-<tr class="separator:a73771648a59844fc109bd68e4a1a44de"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab471acaaeb2ef04b214dbb4ca1184ab3"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structbubble__t.html#ab471acaaeb2ef04b214dbb4ca1184ab3">location</a></td></tr>
-<tr class="separator:ab471acaaeb2ef04b214dbb4ca1184ab3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a979f8bd43daf5a02c778322b6658bbda"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structbubble__t.html#a979f8bd43daf5a02c778322b6658bbda">decimal</a></td></tr>
-<tr class="separator:a979f8bd43daf5a02c778322b6658bbda"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
+Functions</h2></td></tr>
+<tr class="memitem:ad9df5ed127798059a2c0ffa138e8fa10"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="drvr__watchdog_8h.html#ad9df5ed127798059a2c0ffa138e8fa10">Drvr_Watchdog_Init</a> (void)</td></tr>
+<tr class="separator:ad9df5ed127798059a2c0ffa138e8fa10"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aea00a7502c6231b7869e77408593045a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="drvr__watchdog_8h.html#aea00a7502c6231b7869e77408593045a">Drvr_Watchdog_Off</a> (void)</td></tr>
+<tr class="separator:aea00a7502c6231b7869e77408593045a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acce34b3682d156beb2d23de77bd02be1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="drvr__watchdog_8h.html#acce34b3682d156beb2d23de77bd02be1">Drvr_Watchdog_Pet</a> (void)</td></tr>
+<tr class="separator:acce34b3682d156beb2d23de77bd02be1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>A structure representing a digit to print on the bubble display. </p>
-</div><h2 class="groupheader">Member Data Documentation</h2>
-<a id="a979f8bd43daf5a02c778322b6658bbda"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a979f8bd43daf5a02c778322b6658bbda">&#9670;&nbsp;</a></span>decimal</h2>
+<div class="textblock"><p>A driver for the watchdog timer. </p>
+</div><h2 class="groupheader">Function Documentation</h2>
+<a id="ad9df5ed127798059a2c0ffa138e8fa10"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad9df5ed127798059a2c0ffa138e8fa10">&#9670;&nbsp;</a></span>Drvr_Watchdog_Init()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">uint8_t bubble_t::decimal</td>
+          <td class="memname">void Drvr_Watchdog_Init </td>
+          <td>(</td>
+          <td class="paramtype">void&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Set to 1 to display the decimal point. Set to 0 to show no decimal point. </p>
+<p>Initialize the watchdog timer. This shoud be called from main() prior to using this module. </p>
 
 </div>
 </div>
-<a id="ab471acaaeb2ef04b214dbb4ca1184ab3"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ab471acaaeb2ef04b214dbb4ca1184ab3">&#9670;&nbsp;</a></span>location</h2>
+<a id="aea00a7502c6231b7869e77408593045a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aea00a7502c6231b7869e77408593045a">&#9670;&nbsp;</a></span>Drvr_Watchdog_Off()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">uint8_t bubble_t::location</td>
+          <td class="memname">void Drvr_Watchdog_Off </td>
+          <td>(</td>
+          <td class="paramtype">void&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>The location of the digit. 0 is leftmost, and 3 is rightmost. </p>
+<p>Disable the watchdog timer. </p>
 
 </div>
 </div>
-<a id="a73771648a59844fc109bd68e4a1a44de"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a73771648a59844fc109bd68e4a1a44de">&#9670;&nbsp;</a></span>number</h2>
+<a id="acce34b3682d156beb2d23de77bd02be1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acce34b3682d156beb2d23de77bd02be1">&#9670;&nbsp;</a></span>Drvr_Watchdog_Pet()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">uint8_t bubble_t::number</td>
+          <td class="memname">void Drvr_Watchdog_Pet </td>
+          <td>(</td>
+          <td class="paramtype">void&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>The number to print. 0::9 </p>
+<p>Service the watchdog timer system to show we are alive still. </p>
 
 </div>
 </div>
-<hr/>The documentation for this struct was generated from the following file:<ul>
-<li><a class="el" href="drvr__bubble__display_8h_source.html">drvr_bubble_display.h</a></li>
-</ul>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

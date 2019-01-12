@@ -80,8 +80,10 @@ Classes</h2></td></tr>
 Functions</h2></td></tr>
 <tr class="memitem:a282b1b5e0e1af77190ac2d758e1f81ca"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="drvr__bubble__display_8h.html#a282b1b5e0e1af77190ac2d758e1f81ca">Drvr_Bubble_Display_Init</a> (void)</td></tr>
 <tr class="separator:a282b1b5e0e1af77190ac2d758e1f81ca"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae64e99675caf6974abe941e9f92bc02e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="drvr__bubble__display_8h.html#ae64e99675caf6974abe941e9f92bc02e">Drvr_Bubble_Display_Print</a> (uint8_t number, uint8_t location, uint8_t do_decimal)</td></tr>
-<tr class="separator:ae64e99675caf6974abe941e9f92bc02e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5ad617d71805eb633de45830bf8f46bc"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="drvr__bubble__display_8h.html#a5ad617d71805eb633de45830bf8f46bc">Drvr_Bubble_Display_Print</a> (<a class="el" href="structbubble__t.html">bubble_t</a> *digit, uint8_t location)</td></tr>
+<tr class="separator:a5ad617d71805eb633de45830bf8f46bc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7f4d9fa8b19bb5a160b86852b783f0f1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="drvr__bubble__display_8h.html#a7f4d9fa8b19bb5a160b86852b783f0f1">Drvr_Bubble_Display_Shutdown</a> (void)</td></tr>
+<tr class="separator:a7f4d9fa8b19bb5a160b86852b783f0f1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Tiny Tach uses a single 4 character bubble display, the QDSP 6064. The Display is driven thru a shift register for the segments and GPIO for the cathodes. The display is multiplexed @ ~256Hz The bubble display has 4 cathodes, one for each digit. The cathodes are connected to the uC pins and configured to sink current. Set the the corresponding uC pin LOW to select a cathode to sink current and display data. Set the uC pin HIGH to deselect a cathode. </p>
@@ -105,8 +107,8 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="ae64e99675caf6974abe941e9f92bc02e"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae64e99675caf6974abe941e9f92bc02e">&#9670;&nbsp;</a></span>Drvr_Bubble_Display_Print()</h2>
+<a id="a5ad617d71805eb633de45830bf8f46bc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5ad617d71805eb633de45830bf8f46bc">&#9670;&nbsp;</a></span>Drvr_Bubble_Display_Print()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -114,20 +116,14 @@ Functions</h2></td></tr>
         <tr>
           <td class="memname">void Drvr_Bubble_Display_Print </td>
           <td>(</td>
-          <td class="paramtype">uint8_t&#160;</td>
-          <td class="paramname"><em>number</em>, </td>
+          <td class="paramtype"><a class="el" href="structbubble__t.html">bubble_t</a> *&#160;</td>
+          <td class="paramname"><em>digit</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">uint8_t&#160;</td>
-          <td class="paramname"><em>location</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">uint8_t&#160;</td>
-          <td class="paramname"><em>do_decimal</em>&#160;</td>
+          <td class="paramname"><em>location</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -145,6 +141,25 @@ Functions</h2></td></tr>
   </table>
   </dd>
 </dl>
+
+</div>
+</div>
+<a id="a7f4d9fa8b19bb5a160b86852b783f0f1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7f4d9fa8b19bb5a160b86852b783f0f1">&#9670;&nbsp;</a></span>Drvr_Bubble_Display_Shutdown()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Drvr_Bubble_Display_Shutdown </td>
+          <td>(</td>
+          <td class="paramtype">void&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Shifts out an empty byte to set the shift reg pins low. </p>
 
 </div>
 </div>

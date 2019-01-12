@@ -6,6 +6,10 @@
 #define	LED_PORT    PORTD
 #define LED         PD5
 
+/* Retransmit */
+#define	REXMIT_PORT PORTD
+#define REXMIT		PD4	
+
 /* Tact switch */
 #define	SW1_PORT    PORTD
 #define SW1_INPUT   PIND
@@ -19,6 +23,11 @@ void Drvr_GPIO_Init( void )
     DDRD |=  ( 1 << LED );
     /* Clear the LED port bit to set the output low. */
     LED_PORT &= ~( 1 << LED );
+
+    /* Set the retransmit pin for output */
+    DDRD |=  ( 1 << REXMIT );
+    /* Clear the retransmit bit to set the output low. */
+	REXMIT_PORT &= ~( 1 << REXMIT );
 
     /* Clear the switch pin for input. */
 	DDRD &= ~( 1 << SW1 );
@@ -44,6 +53,11 @@ void Drvr_GPIO_Led_Off( void )
 void Drvr_GPIO_Led_On( void )
 {
 	LED_PORT |= ( 1 << LED );
+}
+
+void Drvr_Retransmit_Toggle( void )
+{
+	REXMIT_PORT ^= ( 1 << REXMIT );
 }
 
 uint8_t Drvr_GPIO_Switch_Is_Pressed( void )

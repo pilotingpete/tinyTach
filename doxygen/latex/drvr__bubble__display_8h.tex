@@ -10,7 +10,9 @@ struct \mbox{\hyperlink{structbubble__t}{bubble\+\_\+t}}
 \item 
 void \mbox{\hyperlink{drvr__bubble__display_8h_a282b1b5e0e1af77190ac2d758e1f81ca}{Drvr\+\_\+\+Bubble\+\_\+\+Display\+\_\+\+Init}} (void)
 \item 
-void \mbox{\hyperlink{drvr__bubble__display_8h_ae64e99675caf6974abe941e9f92bc02e}{Drvr\+\_\+\+Bubble\+\_\+\+Display\+\_\+\+Print}} (uint8\+\_\+t number, uint8\+\_\+t location, uint8\+\_\+t do\+\_\+decimal)
+void \mbox{\hyperlink{drvr__bubble__display_8h_a5ad617d71805eb633de45830bf8f46bc}{Drvr\+\_\+\+Bubble\+\_\+\+Display\+\_\+\+Print}} (\mbox{\hyperlink{structbubble__t}{bubble\+\_\+t}} $\ast$digit, uint8\+\_\+t location)
+\item 
+void \mbox{\hyperlink{drvr__bubble__display_8h_a7f4d9fa8b19bb5a160b86852b783f0f1}{Drvr\+\_\+\+Bubble\+\_\+\+Display\+\_\+\+Shutdown}} (void)
 \end{DoxyCompactItemize}
 
 
@@ -24,11 +26,11 @@ Tiny Tach uses a single 4 character bubble display, the Q\+D\+SP 6064. The Displ
 \subsubsection{\texorpdfstring{Drvr\_Bubble\_Display\_Init()}{Drvr\_Bubble\_Display\_Init()}}
 {\footnotesize\ttfamily void Drvr\+\_\+\+Bubble\+\_\+\+Display\+\_\+\+Init (\begin{DoxyParamCaption}\item[{void}]{ }\end{DoxyParamCaption})}
 
-Initialize the Bubble Display driver. This shoud be called from main() prior to using this module. \mbox{\Hypertarget{drvr__bubble__display_8h_ae64e99675caf6974abe941e9f92bc02e}\label{drvr__bubble__display_8h_ae64e99675caf6974abe941e9f92bc02e}} 
+Initialize the Bubble Display driver. This shoud be called from main() prior to using this module. \mbox{\Hypertarget{drvr__bubble__display_8h_a5ad617d71805eb633de45830bf8f46bc}\label{drvr__bubble__display_8h_a5ad617d71805eb633de45830bf8f46bc}} 
 \index{drvr\_bubble\_display.h@{drvr\_bubble\_display.h}!Drvr\_Bubble\_Display\_Print@{Drvr\_Bubble\_Display\_Print}}
 \index{Drvr\_Bubble\_Display\_Print@{Drvr\_Bubble\_Display\_Print}!drvr\_bubble\_display.h@{drvr\_bubble\_display.h}}
 \subsubsection{\texorpdfstring{Drvr\_Bubble\_Display\_Print()}{Drvr\_Bubble\_Display\_Print()}}
-{\footnotesize\ttfamily void Drvr\+\_\+\+Bubble\+\_\+\+Display\+\_\+\+Print (\begin{DoxyParamCaption}\item[{uint8\+\_\+t}]{number,  }\item[{uint8\+\_\+t}]{location,  }\item[{uint8\+\_\+t}]{do\+\_\+decimal }\end{DoxyParamCaption})}
+{\footnotesize\ttfamily void Drvr\+\_\+\+Bubble\+\_\+\+Display\+\_\+\+Print (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{structbubble__t}{bubble\+\_\+t}} $\ast$}]{digit,  }\item[{uint8\+\_\+t}]{location }\end{DoxyParamCaption})}
 
 Sends a number to the bubble display at the location specified. This function should be called at a regular periodic interval to support multiplexing. of the display.
 
@@ -41,3 +43,10 @@ Sends a number to the bubble display at the location specified. This function sh
 \mbox{\texttt{ in}}  & {\em do\+\_\+decimal} & is set to 1 to display the decimal point on the particular digit. Set to 0 to not display the decimal point. \\
 \hline
 \end{DoxyParams}
+\mbox{\Hypertarget{drvr__bubble__display_8h_a7f4d9fa8b19bb5a160b86852b783f0f1}\label{drvr__bubble__display_8h_a7f4d9fa8b19bb5a160b86852b783f0f1}} 
+\index{drvr\_bubble\_display.h@{drvr\_bubble\_display.h}!Drvr\_Bubble\_Display\_Shutdown@{Drvr\_Bubble\_Display\_Shutdown}}
+\index{Drvr\_Bubble\_Display\_Shutdown@{Drvr\_Bubble\_Display\_Shutdown}!drvr\_bubble\_display.h@{drvr\_bubble\_display.h}}
+\subsubsection{\texorpdfstring{Drvr\_Bubble\_Display\_Shutdown()}{Drvr\_Bubble\_Display\_Shutdown()}}
+{\footnotesize\ttfamily void Drvr\+\_\+\+Bubble\+\_\+\+Display\+\_\+\+Shutdown (\begin{DoxyParamCaption}\item[{void}]{ }\end{DoxyParamCaption})}
+
+Shifts out an empty byte to set the shift reg pins low. 

@@ -26,6 +26,13 @@ extern void Drvr_GPIO_Led_Off( void );
  */
 extern void Drvr_GPIO_Led_On( void );
 
+/** Toggle the retransmit pin. Calling this function toggles 
+ * the retransmit putput pin at half of the input frequency.
+ * This can be useful if the input pulse is very narrow such
+ * as with an encoder index. 
+ */
+extern void Drvr_Retransmit_Toggle( void );
+
 /** Function to interface the tactile switch onboard. 
  * Includes a blocking debounce.
  * \return 1 if the switch is pressed, debounced, and released. 
