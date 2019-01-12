@@ -97,10 +97,12 @@ void Drvr_Tach_Rexmit_Off( void )
 	REXMIT_PORT &= ~( 1 << REXMIT );
 }
 
+#if 0
 void Drvr_Tach_Rexmit_On( void )
 {
 	REXMIT_PORT |= ( 1 << REXMIT );
 }
+#endif
 
 void Drvr_Tach_Sensor_Disable( void )
 {

@@ -50,10 +50,12 @@ void Drvr_GPIO_Led_Off( void )
 	LED_PORT &= ~( 1 << LED );
 }
 
+#if 0
 void Drvr_GPIO_Led_On( void )
 {
 	LED_PORT |= ( 1 << LED );
 }
+#endif
 
 void Drvr_Retransmit_Toggle( void )
 {

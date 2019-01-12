@@ -31,14 +31,11 @@
 #define TICK__1MS       ( 1000UL / TICK__TIME_US)
 #define TICK__100US     ( 100UL / TICK__TIME_US)
 
-static char buff[10]; 
-
-static uint8_t new_data = 0;
-
-static uint8_t switch_state = 1;
 const uint8_t min_switch_state = 0;
 const uint8_t max_switch_state = 3;
 
+static uint8_t new_data = 0;
+static uint8_t switch_state = 1;
 static uint32_t clock_cycles = 0;
 
 static void sys_tick_isr_init(void)
@@ -89,8 +86,8 @@ int main(void)
 			}
 			
 			/* Show the new state on the bubble display for a while. */
-			Task_Bubble_Display_Set_Bubble_Data( (uint16_t*)switch_state, 5 );
-			Task_Bubble_Display_Set_Data_Hold( (uint16_t*)10 );
+			Task_Bubble_Display_Set_Bubble_Data( (uintptr_t*)switch_state, 5 );
+			Task_Bubble_Display_Set_Data_Hold( (uintptr_t*)10 );
 			
 			Drvr_GPIO_Led_Off();
 		}

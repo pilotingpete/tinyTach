@@ -18,9 +18,9 @@ void Task_Bubble_Display( void )
     Drvr_Bubble_Display_Print( &bubble_data[i], i );
 }
 
-void Task_Bubble_Display_Set_Data_Hold( uint16_t *data )
+void Task_Bubble_Display_Set_Data_Hold( uintptr_t *data )
 {
-    data_hold = data;
+    data_hold = (uint16_t)data;
 }
 
 void Task_Data_Hold( void )
@@ -31,7 +31,7 @@ void Task_Data_Hold( void )
 	}
 }
 
-void Task_Bubble_Display_Set_Bubble_Data( uint16_t *data, uint8_t decimal )
+void Task_Bubble_Display_Set_Bubble_Data( uintptr_t *data, uint8_t decimal )
 {
     if( !data_hold )
     {
