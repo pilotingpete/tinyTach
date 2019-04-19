@@ -16,11 +16,11 @@
 */
 typedef struct
 {
-    uint8_t number;   /**< The number to print. 0::9 */
-    uint8_t location; /**< The location of the digit. 
+    uint8_t number;   /* The number to print. 0::9 */
+    uint8_t location; /* The location of the digit. 
                          * 0 is leftmost, and 3 is rightmost.
                          */
-    uint8_t decimal;  /**< Set to 1 to display the decimal point.
+    uint8_t decimal;  /* Set to 1 to display the decimal point.
                          * Set to 0 to show no decimal point.
                          */
 } bubble_t;
