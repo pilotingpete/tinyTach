@@ -2,6 +2,6 @@
 #define _HEADER_GUARD_UUID_02F65205_5662_4227_95DC_7702B17C5AAB
 
 /** Watchdog timer service task.. */
-extern void Task_Watchdog( void );
+extern void Task_Watchdog(void);
 
 #endif /* _HEADER_GUARD_UUID_02F65205_5662_4227_95DC_7702B17C5AAB */

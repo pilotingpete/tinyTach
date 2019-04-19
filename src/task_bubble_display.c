@@ -7,69 +7,69 @@
 static bubble_t bubble_data[4];
 static uint16_t data_hold;
 
-void Task_Bubble_Display( void )
+void Task_Bubble_Display(void)
 {
-	static uint8_t i;
+    static uint8_t i;
 
-	if( ++i > 3 )
-	{
-		i = 0;
-	}
-    Drvr_Bubble_Display_Print( &bubble_data[i], i );
+    if (++i > 3)
+    {
+        i = 0;
+    }
+    Drvr_Bubble_Display_Print(&bubble_data[i], i);
 }
 
-void Task_Bubble_Display_Set_Data_Hold( uintptr_t *data )
+void Task_Bubble_Display_Set_Data_Hold(uintptr_t *data)
 {
     data_hold = (uint16_t)data;
 }
 
-void Task_Data_Hold( void )
+void Task_Data_Hold(void)
 {
-	if( data_hold > 0 )
-	{
-		data_hold--;	
-	}
+    if (data_hold > 0)
+    {
+        data_hold--;
+    }
 }
 
-void Task_Bubble_Display_Set_Bubble_Data( uintptr_t *data, uint8_t decimal )
+void Task_Bubble_Display_Set_Bubble_Data(uintptr_t *data, uint8_t decimal)
 {
-    if( !data_hold )
+    if (!data_hold)
     {
-	    /* Clear the bubble data structure */
-		memset( bubble_data, 0, sizeof( bubble_t ) * 4);
-	    
-	    if( decimal == 0 )
-	    {
+        /* Clear the bubble data structure */
+        memset(bubble_data, 0, sizeof(bubble_t) * 4);
+
+        if (decimal == 0)
+        {
             /* Place no decimal point */
-	    }
-	    else if( decimal == 5 )
-	    {
+        }
+        else if (decimal == 5)
+        {
             /* Turn on all the decimal points. */
-            for( uint8_t i = 0; i < 4; i++ )
+            for (uint8_t i = 0; i < 4; i++)
             {
-            	bubble_data[ i ].decimal = 1;
+                bubble_data[i].decimal = 1;
             }
-	    }
-	    else
-	    {
-	    	/* Place a single decimal point. */
-		    bubble_data[ decimal - 1 ].decimal = 1;
-	    }
+        }
+        else
+        {
+            /* Place a single decimal point. */
+            bubble_data[decimal - 1].decimal = 1;
+        }
 
-		/* Thousands */
-		bubble_data[0].number = ( (uint16_t)data % 10000 ) / 1000;
-		bubble_data[0].location = 0;
+        /* Thousands */
+        bubble_data[0].number = ((uint16_t)data % 10000) / 1000;
+        bubble_data[0].location = 0;
 
-	    /* Hundreds */
-		bubble_data[1].number = ( (uint16_t)data % 1000 ) / 100;
-		bubble_data[1].location = 1;
-		
-		/* Tens */
-		bubble_data[2].number = ( (uint16_t)data % 100 ) / 10;
-		bubble_data[2].location = 2;
-		
-		/* Ones */
-		bubble_data[3].number = (uint16_t)data % 10;
-		bubble_data[3].location = 3;
-	}
+        /* Hundreds */
+        bubble_data[1].number = ((uint16_t)data % 1000) / 100;
+        bubble_data[1].location = 1;
+
+        /* Tens */
+        bubble_data[2].number = ((uint16_t)data % 100) / 10;
+        bubble_data[2].location = 2;
+
+        /* Ones */
+        bubble_data[3].number = (uint16_t)data % 10;
+        bubble_data[3].location = 3;
+    }
 }
