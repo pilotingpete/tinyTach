@@ -28,7 +28,7 @@ typedef struct
 /** Initialize the Bubble Display driver. This shoud be called from main() 
  * prior to using this module.
  */
-extern void Drvr_Bubble_Display_Init(void);
+extern void Drvr_Bubble_Display_Init( void );
 
 /** Sends a number to the bubble display at the location specified.
  * This function should be called at a regular periodic interval
@@ -40,10 +40,10 @@ extern void Drvr_Bubble_Display_Init(void);
  * \param[in] do_decimal is set to 1 to display the decimal point on the 
  * particular digit. Set to 0 to not display the decimal point.
  */
-extern void Drvr_Bubble_Display_Print(bubble_t *digit, uint8_t location);
+extern void Drvr_Bubble_Display_Print( bubble_t *digit, uint8_t location );
 
 /** Shifts out an empty byte to set the shift reg pins low.
  */
-extern void Drvr_Bubble_Display_Shutdown(void);
+extern void Drvr_Bubble_Display_Shutdown( void );
 
 #endif /* _HEADER_GUARD_UUID_85186272_CD42_4099_9731_6F9E184727B4 */

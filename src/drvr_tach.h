@@ -11,27 +11,27 @@
 /** Initialize the tach driver. This shoud be called from main() 
  * prior to using this module.
  */
-extern void Drvr_Tach_Init(void);
+extern void Drvr_Tach_Init( void );
 
 /** Reinitialize tach counters to zero.
  */
-extern void Drvr_Tach_Reset(void);
+extern void Drvr_Tach_Reset( void );
 
 /** Turn OFF the retransmit pin.
  */
-extern void Drvr_Tach_Rexmit_Off(void);
+extern void Drvr_Tach_Rexmit_Off( void );
 
 /** Turn ON the retransmit pin
  */
-extern void Drvr_Tach_Rexmit_On(void);
+extern void Drvr_Tach_Rexmit_On( void );
 
 /** Turn OFF the IR emitter pin.
  */
-extern void Drvr_Tach_Sensor_Disable(void);
+extern void Drvr_Tach_Sensor_Disable( void );
 
 /** Turn ON the IR emitter pin
  */
-extern void Drvr_Tach_Sensor_Enable(void);
+extern void Drvr_Tach_Sensor_Enable( void );
 
 /** Get the total clock cycles.
  *
@@ -40,12 +40,12 @@ extern void Drvr_Tach_Sensor_Enable(void);
  *
  * \return the number of clock cycles between input capture events.
  */
-extern uint32_t Drvr_Tach_Get_Clk_Cyc(void);
+extern uint32_t Drvr_Tach_Get_Clk_Cyc( void );
 
 /** Rearm the input capture system.
  * This prepares the input capture system for the next input pulse.
  */
-extern void Drvr_Tach_Rearm_Input_Capture(void);
+extern void Drvr_Tach_Rearm_Input_Capture( void );
 
 /** Getter for the capture state.
  *
@@ -54,6 +54,6 @@ extern void Drvr_Tach_Rearm_Input_Capture(void);
  * 1 -> first capture event complete.
  * 2 -> second capture event complete. - ready for calculation.
  */
-extern uint8_t Drvr_Tach_Get_Capture_State(void);
+extern uint8_t Drvr_Tach_Get_Capture_State( void );
 
 #endif /* _HEADER_GUARD_UUID_AF3C330E_A241_42AD_8917_C22867DA0FD3 */

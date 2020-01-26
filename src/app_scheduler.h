@@ -7,9 +7,9 @@
 
 typedef struct
 {
-    uint16_t delta;     //*< Timer interval to run task */
-    uint32_t prev_tick; //*< Last run tick time. */
-    void (*func)(void); //*< Function pointer for the task to run. */
+    uint16_t delta;          //*< Timer interval to run task */
+    uint32_t prev_tick;      //*< Last run tick time. */
+    void ( *func )( void );  //*< Function pointer for the task to run. */
 } task_t;
 
 /** Run the scheduler task array.
@@ -19,12 +19,12 @@ typedef struct
  *
  * \param[in] const task_t *tasks is a pointer to an array of tasks to run.
  */
-extern void App_Scheduler_Run_Tasks(task_t *tasks);
+extern void App_Scheduler_Run_Tasks( task_t *tasks );
 
 /** Bump the sys tick timer. Basically, just put this function in a periodic
  * ISR function.
  */
-extern void App_Scheduler_Bump_Sys_Tick(void);
+extern void App_Scheduler_Bump_Sys_Tick( void );
 
 /** Get the current value of the sys_tick counter.
  * 
@@ -33,6 +33,6 @@ extern void App_Scheduler_Bump_Sys_Tick(void);
  *
  * \return the 32-bit sys_tick counter value. 
 */
-extern uint32_t App_Scheduler_Get_Sys_Tick(void);
+extern uint32_t App_Scheduler_Get_Sys_Tick( void );
 
 #endif /* _HEADER_GUARD_UUID_8C28487B_9769_4759_991E_3DBE1F49D232 */

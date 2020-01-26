@@ -1,7 +1,7 @@
-#include <stdlib.h>
-#include <avr/io.h>
-#include <avr/interrupt.h>
 #include "drvr_tach.h"
+#include <avr/interrupt.h>
+#include <avr/io.h>
+#include <stdlib.h>
 #include "drvr_gpio.h"
 
 /* Tach signal retransmit output */
@@ -31,13 +31,13 @@ static volatile uint8_t num_overflows_tmr_1 = 0;
 
 static uint32_t total_clock_cycles = 0;
 
-static void disable_tach_timer_interrupts(void)
+static void disable_tach_timer_interrupts( void )
 {
     /* Disable timer capture and overflow interrupts */
-    TIMSK &= ~((1 << TOIE1) | (1 << ICIE1));
+    TIMSK &= ~( ( 1 << TOIE1 ) | ( 1 << ICIE1 ) );
 }
 
-static void calc_clk_cyc(void)
+static void calc_clk_cyc( void )
 {
     const uint32_t ovf_val = 65536;
 
@@ -47,40 +47,40 @@ static void calc_clk_cyc(void)
 
     /* Apply a 1st order IIR filter. */
     //total_clock_cycles = total_clock_cycles * filter_factor + new_reading;
-    total_clock_cycles = total_clock_cycles - (total_clock_cycles >> 2) + new_reading;
+    total_clock_cycles = total_clock_cycles - ( total_clock_cycles >> 2 ) + new_reading;
     sei(); /* Reenable global interrupts */
 }
 
-void Drvr_Tach_Init(void)
+void Drvr_Tach_Init( void )
 {
     /* Tach input IR detector */
-    DDRD &= ~(1 << IR_INPUT);
+    DDRD &= ~( 1 << IR_INPUT );
     /* Enable the internal pullup. */
-    IR_PORT |= (1 << IR_INPUT);
+    IR_PORT |= ( 1 << IR_INPUT );
 
     /* Tach enable - IR Emitter */
     /* Set the LED pin for output. */
-    DDRD |= (1 << IR_ENABLE);
+    DDRD |= ( 1 << IR_ENABLE );
     /* Set the IR emitter pin high. */
-    IR_PORT |= (1 << IR_ENABLE);
+    IR_PORT |= ( 1 << IR_ENABLE );
 
     /* Set the LED pin for output. */
-    DDRD |= (1 << REXMIT);
+    DDRD |= ( 1 << REXMIT );
     /* Clear the LED port bit to set the output low. */
-    REXMIT_PORT &= ~(1 << REXMIT);
+    REXMIT_PORT &= ~( 1 << REXMIT );
 
     /* Timer 1 configuration. */
-    TCCR1B |= (1 << ICNC1);                /* Enable input capture noise canceler. */
-    /*TCCR1B |= ( 1 << ICES1 );*/          /* Trigger on rising edge of ICP1 pin. */
-    TCCR1B &= ~(1 << ICES1);               /* Trigger on falling edge of ICP1 pin. */
-    TCCR1B |= ((1 << CS11) | (1 << CS10)); /* Div64 on clock for 4.194304 MHz / 64 = 65536 */
+    TCCR1B |= ( 1 << ICNC1 );                    /* Enable input capture noise canceler. */
+    /*TCCR1B |= ( 1 << ICES1 );*/                /* Trigger on rising edge of ICP1 pin. */
+    TCCR1B &= ~( 1 << ICES1 );                   /* Trigger on falling edge of ICP1 pin. */
+    TCCR1B |= ( ( 1 << CS11 ) | ( 1 << CS10 ) ); /* Div64 on clock for 4.194304 MHz / 64 = 65536 */
 
     /* Interrupt enable */
-    TIMSK |= (1 << TOIE1); /* Timer 1 overflow interrupt */
-    TIMSK |= (1 << ICIE1); /* Input capture interrupt */
+    TIMSK |= ( 1 << TOIE1 ); /* Timer 1 overflow interrupt */
+    TIMSK |= ( 1 << ICIE1 ); /* Input capture interrupt */
 }
 
-void Drvr_Tach_Reset(void)
+void Drvr_Tach_Reset( void )
 {
     cli(); /* Disable interrupts */
     input_cap_1 = 0;
@@ -90,9 +90,9 @@ void Drvr_Tach_Reset(void)
     sei(); /* Reenable interrupts */
 }
 
-void Drvr_Tach_Rexmit_Off(void)
+void Drvr_Tach_Rexmit_Off( void )
 {
-    REXMIT_PORT &= ~(1 << REXMIT);
+    REXMIT_PORT &= ~( 1 << REXMIT );
 }
 
 #if 0
@@ -102,78 +102,78 @@ void Drvr_Tach_Rexmit_On( void )
 }
 #endif
 
-void Drvr_Tach_Sensor_Disable(void)
+void Drvr_Tach_Sensor_Disable( void )
 {
-    IR_PORT &= ~(1 << IR_ENABLE);
+    IR_PORT &= ~( 1 << IR_ENABLE );
 }
 
-void Drvr_Tach_Sensor_Enable(void)
+void Drvr_Tach_Sensor_Enable( void )
 {
-    IR_PORT |= (1 << IR_ENABLE);
+    IR_PORT |= ( 1 << IR_ENABLE );
 }
 
-uint8_t Drvr_Tach_Get_Capture_State(void)
+uint8_t Drvr_Tach_Get_Capture_State( void )
 {
     return capture_state;
 }
 
-void Drvr_Tach_Rearm_Input_Capture(void)
+void Drvr_Tach_Rearm_Input_Capture( void )
 {
     input_cap_1 = input_cap_2;
     capture_state = SECOND_CAPTURE;
     num_overflows_tmr_1 = 0;
 
     /* Enable timer overflow and input capture interrupts. */
-    TIMSK |= ((1 << TOIE1) | (1 << ICIE1));
+    TIMSK |= ( ( 1 << TOIE1 ) | ( 1 << ICIE1 ) );
 }
 
-uint32_t Drvr_Tach_Get_Clk_Cyc(void)
+uint32_t Drvr_Tach_Get_Clk_Cyc( void )
 {
     uint32_t check_cyc = 0;
 
     do
     {
         check_cyc = total_clock_cycles;
-    } while (check_cyc != total_clock_cycles);
+    } while( check_cyc != total_clock_cycles );
 
     /* Return filtered data. */
     //return total_clock_cycles / ( 1 - filter_factor);
-    return (total_clock_cycles >> 2);
+    return ( total_clock_cycles >> 2 );
 }
 
 /* For extending the input capture timing capability. */
-ISR(TIMER1_OVF_vect)
+ISR( TIMER1_OVF_vect )
 {
     /* Limit the overflows so this doesn't roll over too... */
-    if (num_overflows_tmr_1 < 255)
+    if( num_overflows_tmr_1 < 255 )
         num_overflows_tmr_1++;
 }
 
 /* Input capture period measurement. */
-ISR(TIMER1_CAPT_vect)
+ISR( TIMER1_CAPT_vect )
 {
-    switch (capture_state)
+    switch( capture_state )
     {
-    case FIRST_CAPTURE:
-        /* First input capture time */
-        input_cap_1 = ICR1;
-        capture_state++;
-        break;
-
-    case SECOND_CAPTURE:
-        /* Second input capture time */
-        input_cap_2 = ICR1;
-
-        /* If a plausible amount of time has passed. */
-        if ((num_overflows_tmr_1 > 0) || ((input_cap_2 - input_cap_1) > min_clk_cyc))
-        {
-            disable_tach_timer_interrupts();
-            calc_clk_cyc();
+        case FIRST_CAPTURE:
+            /* First input capture time */
+            input_cap_1 = ICR1;
             capture_state++;
-        }
-        break;
+            break;
 
-    default:
-        break;
+        case SECOND_CAPTURE:
+            /* Second input capture time */
+            input_cap_2 = ICR1;
+
+            /* If a plausible amount of time has passed. */
+            if( ( num_overflows_tmr_1 > 0 ) || ( ( input_cap_2 - input_cap_1 ) > min_clk_cyc ) )
+            {
+                disable_tach_timer_interrupts();
+                calc_clk_cyc();
+                capture_state++;
+            }
+            break;
+
+        default:
+            break;
     }
 }

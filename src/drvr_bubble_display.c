@@ -1,5 +1,5 @@
-#include <avr/io.h>
 #include "drvr_bubble_display.h"
+#include <avr/io.h>
 
 /* Shift register GPIO */
 #define SHIFT_REG_PORT PORTB
@@ -30,29 +30,29 @@
 #define DIGIT_9 0b01101111 /*	9				A,B,C,D,F,G		  */
 #define DECIMAL 0b10000000 /* 	DP								  */
 
-static void shift_reg_pulse(void)
+static void shift_reg_pulse( void )
 {
-    SHIFT_REG_PORT |= (1 << SRCLK);  /* Set the serial clock line HIGH.*/
-    SHIFT_REG_PORT &= ~(1 << SRCLK); /* Set the serial Clock line LOW. */
+    SHIFT_REG_PORT |= ( 1 << SRCLK );  /* Set the serial clock line HIGH.*/
+    SHIFT_REG_PORT &= ~( 1 << SRCLK ); /* Set the serial Clock line LOW. */
 }
 
 /* Shifting data out on the 74HC595 shift register. */
-static void shift_byte_out(uint8_t byte_to_shift)
+static void shift_byte_out( uint8_t byte_to_shift )
 {
     /* Hold low while shifting data. */
-    SHIFT_REG_PORT &= ~(1 << RCLK);
+    SHIFT_REG_PORT &= ~( 1 << RCLK );
 
     /* Traverse the byte, high to low, and clock out data. */
-    for (int8_t i = 7; i >= 0; i--)
+    for( int8_t i = 7; i >= 0; i-- )
     {
         /* If the bit is high. */
-        if (byte_to_shift & (1 << i))
+        if( byte_to_shift & ( 1 << i ) )
         {
-            SHIFT_REG_PORT |= (1 << SER); /* Set the register pin high. */
+            SHIFT_REG_PORT |= ( 1 << SER ); /* Set the register pin high. */
         }
         else
         {
-            SHIFT_REG_PORT &= ~(1 << SER); /* Set the register pin low. */
+            SHIFT_REG_PORT &= ~( 1 << SER ); /* Set the register pin low. */
         }
 
         /* Clock that bit out */
@@ -60,67 +60,66 @@ static void shift_byte_out(uint8_t byte_to_shift)
     }
 
     /* Latch data to shift register output pins. */
-    SHIFT_REG_PORT |= (1 << RCLK);
+    SHIFT_REG_PORT |= ( 1 << RCLK );
 }
 
-static void build_bubble_byte(uint8_t digit_to_send, uint8_t dp)
+static void build_bubble_byte( uint8_t digit_to_send, uint8_t dp )
 {
     uint8_t byte_to_shift = 0b00000000;
 
-    switch (digit_to_send)
+    switch( digit_to_send )
     {
+        case 0:
+            byte_to_shift = DIGIT_0;
+            break;
 
-    case 0:
-        byte_to_shift = DIGIT_0;
-        break;
+        case 1:
+            byte_to_shift = DIGIT_1;
+            break;
 
-    case 1:
-        byte_to_shift = DIGIT_1;
-        break;
+        case 2:
+            byte_to_shift = DIGIT_2;
+            break;
 
-    case 2:
-        byte_to_shift = DIGIT_2;
-        break;
+        case 3:
+            byte_to_shift = DIGIT_3;
+            break;
 
-    case 3:
-        byte_to_shift = DIGIT_3;
-        break;
+        case 4:
+            byte_to_shift = DIGIT_4;
+            break;
 
-    case 4:
-        byte_to_shift = DIGIT_4;
-        break;
+        case 5:
+            byte_to_shift = DIGIT_5;
+            break;
 
-    case 5:
-        byte_to_shift = DIGIT_5;
-        break;
+        case 6:
+            byte_to_shift = DIGIT_6;
+            break;
 
-    case 6:
-        byte_to_shift = DIGIT_6;
-        break;
+        case 7:
+            byte_to_shift = DIGIT_7;
+            break;
 
-    case 7:
-        byte_to_shift = DIGIT_7;
-        break;
+        case 8:
+            byte_to_shift = DIGIT_8;
+            break;
 
-    case 8:
-        byte_to_shift = DIGIT_8;
-        break;
-
-    case 9:
-        byte_to_shift = DIGIT_9;
-        break;
+        case 9:
+            byte_to_shift = DIGIT_9;
+            break;
     }
 
-    if (dp)
+    if( dp )
     {
         /* Display the decimal point on this digit. */
         byte_to_shift |= DECIMAL;
     }
 
-    shift_byte_out(byte_to_shift);
+    shift_byte_out( byte_to_shift );
 }
 
-static void select_bubble_element(uint8_t ele)
+static void select_bubble_element( uint8_t ele )
 {
     /* Lower nibble */
     const uint8_t mask = 0x0F;
@@ -132,60 +131,60 @@ static void select_bubble_element(uint8_t ele)
      * Clear the bit to sink current and activate a 
      * bubble element. 
      */
-    switch (ele)
+    switch( ele )
     {
-    case 0: /* Thousands position */
-        tmp &= ~(1 << CATH_0);
-        break;
+        case 0: /* Thousands position */
+            tmp &= ~( 1 << CATH_0 );
+            break;
 
-    case 1: /* Hundreds */
-        tmp &= ~(1 << CATH_1);
-        break;
+        case 1: /* Hundreds */
+            tmp &= ~( 1 << CATH_1 );
+            break;
 
-    case 2: /* Tens */
-        tmp &= ~(1 << CATH_2);
-        break;
+        case 2: /* Tens */
+            tmp &= ~( 1 << CATH_2 );
+            break;
 
-    case 3: /* Ones */
-        tmp &= ~(1 << CATH_3);
-        break;
+        case 3: /* Ones */
+            tmp &= ~( 1 << CATH_3 );
+            break;
 
-    default:
-        /* No action */
-        break;
+        default:
+            /* No action */
+            break;
     }
 
     /* Write the lower nibble to activate the desired cathode. */
-    BUBBLE_CATH_PORT = (BUBBLE_CATH_PORT & ~mask) | (tmp & mask);
+    BUBBLE_CATH_PORT = ( BUBBLE_CATH_PORT & ~mask ) | ( tmp & mask );
 }
 
-void Drvr_Bubble_Display_Init(void)
+void Drvr_Bubble_Display_Init( void )
 {
     /* Shift register.
      * Set the bit for output. 
      */
-    DDRB |= ((1 << RCLK) | (1 << SER) | (1 << SRCLK));
+    DDRB |= ( ( 1 << RCLK ) | ( 1 << SER ) | ( 1 << SRCLK ) );
     /* Set the outputs LOW. */
-    SHIFT_REG_PORT &= ~((1 << RCLK) | (1 << SER) | (1 << SRCLK));
+    SHIFT_REG_PORT &= ~( ( 1 << RCLK ) | ( 1 << SER ) | ( 1 << SRCLK ) );
 
     /* Bubble display cathode sinks. 
      * Set the bit for output. 
      */
-    DDRB |= ((1 << CATH_0) | (1 << CATH_1) | (1 << CATH_2) | (1 << CATH_3));
+    DDRB |= ( ( 1 << CATH_0 ) | ( 1 << CATH_1 ) | ( 1 << CATH_2 ) | ( 1 << CATH_3 ) );
     /* Set the outputs HIGH to not sink current */
-    BUBBLE_CATH_PORT |= ((1 << CATH_0) | (1 << CATH_1) | (1 << CATH_2) | (1 << CATH_3));
+    BUBBLE_CATH_PORT |= ( ( 1 << CATH_0 ) | ( 1 << CATH_1 ) | ( 1 << CATH_2 ) | ( 1 << CATH_3 ) );
 }
 
-void Drvr_Bubble_Display_Print(bubble_t *digit, uint8_t location)
+void Drvr_Bubble_Display_Print( bubble_t *digit, uint8_t location )
 {
     /* Send the new digit out on the shift register. */
-    build_bubble_byte(digit->number, digit->decimal);
+    build_bubble_byte( digit->number, digit->decimal );
     /* Select which bubble element to display on. */
-    select_bubble_element(location);
+    select_bubble_element( location );
 }
 
-void Drvr_Bubble_Display_Shutdown(void)
+void Drvr_Bubble_Display_Shutdown( void )
 {
-    shift_byte_out(0b00000000);
-    BUBBLE_CATH_PORT |= ((1 << CATH_0) | (1 << CATH_1) | (1 << CATH_2) | (1 << CATH_3));
+    shift_byte_out( 0b00000000 );
+    BUBBLE_CATH_PORT |= ( ( 1 << CATH_0 ) | ( 1 << CATH_1 ) | ( 1 << CATH_2 ) | ( 1 << CATH_3 ) );
 }
